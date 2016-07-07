@@ -1,10 +1,8 @@
-*.js
-*.js.map
 !/*.js
 !/tasks/*.js
 /_build
-/bower_components
 /dist
+/bower_components
 /html-report
 /node_modules
 /typings
@@ -12,3 +10,4 @@
 .tscache
 coverage-unmapped.json
 npm-debug.log
+.DS_Store
