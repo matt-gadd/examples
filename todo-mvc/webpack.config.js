@@ -1,10 +1,10 @@
 const webpack = require('webpack');
-const UMDCompatPlugin = require('umd-compat-webpack-plugin');
+const RequirePlugin = require('umd-compat-webpack-plugin');
 
 module.exports = {
 	entry: './_build/src/main.js',
 	debug: true,
-	devtool: 'cheap-module-source-map',
+	devtool: 'source-map',
 	target: 'node',
 	extensions: ['', '.js'],
 	resolve: {
@@ -25,12 +25,19 @@ module.exports = {
 			'rxjs': '@reactivex/rxjs/dist/amd'
 		},
 	},
+	module: {
+		unknownContextRegExp: /$^/,
+		unknownContextCritical: false,
+		exprContextRegExp: /$^/,
+		exprContextCritical: false
+	},
 	plugins: [
-		new UMDCompatPlugin(),
 		new webpack.ResolverPlugin([
 			new webpack.ResolverPlugin.FileAppendPlugin(['/main.js'])
 		]),
+		new RequirePlugin(),
 		new webpack.IgnorePlugin(/examples/),
+		new webpack.optimize.DedupePlugin(),
 		new webpack.optimize.UglifyJsPlugin()
 	],
 	output: {
