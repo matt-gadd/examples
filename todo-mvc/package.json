@@ -26,7 +26,7 @@
     "intern": "^3.2.3",
     "remap-istanbul": "^0.6.4",
     "tslint": "^3.10.2",
-    "umd-compat-webpack-plugin": "^1.0.0",
+    "umd-compat-webpack-plugin": "1.0.1",
     "webpack": "^1.13.1"
   },
   "dependencies": {
