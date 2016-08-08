@@ -38,7 +38,11 @@ module.exports = {
 		new RequirePlugin(),
 		new webpack.IgnorePlugin(/examples/),
 		new webpack.optimize.DedupePlugin(),
-		new webpack.optimize.UglifyJsPlugin()
+		new webpack.optimize.UglifyJsPlugin({
+			compress: {
+				warnings: false
+			}
+		})
 	],
 	output: {
 		path: './_build/dist',
