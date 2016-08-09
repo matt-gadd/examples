@@ -9,7 +9,6 @@ module.exports = {
 	resolve: {
 		root: __dirname,
 		extensions: ['', '.ts', '.tsx', '.js'],
-		modulesDirectories: ['node_modules'],
 		alias: {
 			'dojo-actions': 'dojo-actions/dist/umd',
 			'dojo-app': 'dojo-app/dist/umd',
