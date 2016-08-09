@@ -2,13 +2,13 @@ const webpack = require('webpack');
 const RequirePlugin = require('umd-compat-webpack-plugin');
 
 module.exports = {
-	entry: './_build/src/main.js',
+	entry: './src/main.ts',
 	debug: true,
 	devtool: 'source-map',
 	target: 'node',
-	extensions: ['', '.js'],
 	resolve: {
 		root: __dirname,
+		extensions: ['', '.ts', '.tsx', '.js'],
 		modulesDirectories: ['node_modules'],
 		alias: {
 			'dojo-actions': 'dojo-actions/dist/umd',
@@ -29,7 +29,10 @@ module.exports = {
 		unknownContextRegExp: /$^/,
 		unknownContextCritical: false,
 		exprContextRegExp: /$^/,
-		exprContextCritical: false
+		exprContextCritical: false,
+		loaders: [
+			{ test: /src\/.*\.ts?$/, loader: 'ts-loader' }
+		]
 	},
 	plugins: [
 		new webpack.ResolverPlugin([
