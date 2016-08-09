@@ -35,17 +35,11 @@ module.exports = {
 		]
 	},
 	plugins: [
-		new webpack.ResolverPlugin([
-			new webpack.ResolverPlugin.FileAppendPlugin(['/main.js'])
-		]),
+		new webpack.ResolverPlugin([ new webpack.ResolverPlugin.FileAppendPlugin(['/main.js']) ]),
 		new RequirePlugin(),
 		new webpack.IgnorePlugin(/examples/),
 		new webpack.optimize.DedupePlugin(),
-		new webpack.optimize.UglifyJsPlugin({
-			compress: {
-				warnings: false
-			}
-		})
+		new webpack.optimize.UglifyJsPlugin({ compress: { warnings: false }})
 	],
 	output: {
 		path: './_build/dist',
