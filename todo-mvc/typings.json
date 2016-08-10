@@ -13,7 +13,6 @@
 		"dojo-shim": "npm:dojo-shim",
 		"dojo-has": "npm:dojo-has",
 		"dojo-dom": "npm:dojo-dom",
-		"dojo-loader": "npm:dojo-loader",
 		"dojo-routing": "npm:dojo-routing",
 		"dojo-widgets": "npm:dojo-widgets",
 		"es6-shim": "github:DefinitelyTyped/DefinitelyTyped/es6-shim/es6-shim.d.ts#6697d6f7dadbf5773cb40ecda35a76027e0783b2",

@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const RequirePlugin = require('umd-compat-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
 	entry: './src/main.ts',
@@ -34,6 +35,11 @@ module.exports = {
 		]
 	},
 	plugins: [
+		new CopyWebpackPlugin([
+			{ from: 'src/index.html', to: 'index.html' },
+			{ from: 'node_modules/todomvc-common/base.css', to: 'base.css' },
+			{ from: 'node_modules/todomvc-app-css/index.css', to: 'index.css' }
+		]),
 		new webpack.ResolverPlugin([ new webpack.ResolverPlugin.FileAppendPlugin(['/main.js']) ]),
 		new RequirePlugin(),
 		new webpack.IgnorePlugin(/examples/),
@@ -41,7 +47,7 @@ module.exports = {
 		new webpack.optimize.UglifyJsPlugin({ compress: { warnings: false }})
 	],
 	output: {
-		path: './_build/dist',
-		filename: 'index.js',
+		path: './dist',
+		filename: 'main.js',
 	}
 };

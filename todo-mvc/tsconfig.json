@@ -20,7 +20,6 @@
 		"./src/actions/storeTodoActions.ts",
 		"./src/actions/uiTodoActions.ts",
 		"./src/actions/widgetTodoActions.ts",
-		"./src/index.ts",
 		"./src/main.ts",
 		"./src/registry/createTodoRegistry.ts",
 		"./src/utils/createLocalMemoryStore.ts",
