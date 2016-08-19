@@ -4,6 +4,7 @@
   "description": "TodoMVC using Dojo2",
   "main": "index.js",
   "scripts": {
+    "install": "./scripts/flatten-dojo-deps.sh",
     "test": "grunt test"
   },
   "repository": {
