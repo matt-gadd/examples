@@ -13,6 +13,7 @@ do
 	cp $BAKPKG $PKG
 	echo "fixing package.json: $PKG"
 	sed -i '' 's/"main": "index.js"/"main": "main.js"/g' $PKG
+	sed -i '' "s/\"typings\": \"\.\/dist\/umd\/$D\.d\.ts\"/\"typings\": \"$D.d.ts\"/g" $PKG
 	for F in `find $D -name '*.js' -type f`
 	do
 		echo "fixing imports: $F"
