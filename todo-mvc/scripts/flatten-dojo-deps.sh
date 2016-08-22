@@ -11,5 +11,12 @@ do
 	mkdir $D
 	cp -r $UMD $D
 	cp $BAKPKG $PKG
+	echo "fixing package.json: $PKG"
 	sed -i '' 's/"main": "index.js"/"main": "main.js"/g' $PKG
+	for F in `find $D -name '*.js' -type f`
+	do
+		echo "fixing imports: $F"
+		sed -i '' 's/maquette\/maquette/maquette/g' $F
+		sed -i '' 's/immutable\/immutable/immutable/g' $F
+	done
 done

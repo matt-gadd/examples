@@ -11,8 +11,6 @@ module.exports = {
 		root: __dirname,
 		extensions: ['', '.ts', '.tsx', '.js'],
 		alias: {
-			'immutable': 'immutable/dist',
-			'maquette': 'maquette/dist',
 			'rxjs': '@reactivex/rxjs/dist/amd'
 		},
 	},
