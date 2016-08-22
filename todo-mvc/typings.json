@@ -1,7 +1,7 @@
 {
 	"name": "dojo2-todo-mvc",
 	"dependencies": {
-		"@reactivex/RxJS": "npm:@reactivex/RxJS",
+		"rxjs": "npm:rxjs",
 		"immutable": "npm:immutable",
 		"maquette": "npm:maquette"
 	},
