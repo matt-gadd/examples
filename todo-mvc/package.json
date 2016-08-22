@@ -20,6 +20,7 @@
     "source-map-loader": "^0.1.5",
     "ts-loader": "^0.8.2",
     "tslint": "^3.10.2",
+    "typescript": "^1.8.10",
     "umd-compat-webpack-plugin": "1.0.1",
     "webpack": "^1.13.1"
   },
