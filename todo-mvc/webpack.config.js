@@ -9,10 +9,7 @@ module.exports = {
 	target: 'node',
 	resolve: {
 		root: __dirname,
-		extensions: ['', '.ts', '.tsx', '.js'],
-		alias: {
-			'rxjs': '@reactivex/rxjs/dist/amd'
-		},
+		extensions: ['', '.ts', '.tsx', '.js']
 	},
 	module: {
 		unknownContextRegExp: /$^/,
