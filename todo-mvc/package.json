@@ -3,9 +3,6 @@
   "version": "0.0.1",
   "description": "TodoMVC using Dojo2",
   "main": "index.js",
-  "scripts": {
-    "test": "grunt test"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/dojo/examples.git"
@@ -37,6 +34,10 @@
     "dojo-app": "^2.0.0-alpha.8",
     "dojo-compose": "^2.0.0-beta.13",
     "dojo-core": "^2.0.0-alpha.15",
+    "dojo-actions": "^2.0.0-alpha.8",
+    "dojo-app": "^2.0.0-alpha.4",
+    "dojo-compose": "^2.0.0-beta.10",
+    "dojo-core": "^2.0.0-alpha.12",
     "dojo-dom": "^2.0.0-alpha.5",
     "dojo-has": "^2.0.0-alpha.5",
     "dojo-loader": "^2.0.0-beta.7",
