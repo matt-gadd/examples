@@ -34,10 +34,6 @@
     "dojo-app": "^2.0.0-alpha.8",
     "dojo-compose": "^2.0.0-beta.13",
     "dojo-core": "^2.0.0-alpha.15",
-    "dojo-actions": "^2.0.0-alpha.8",
-    "dojo-app": "^2.0.0-alpha.4",
-    "dojo-compose": "^2.0.0-beta.10",
-    "dojo-core": "^2.0.0-alpha.12",
     "dojo-dom": "^2.0.0-alpha.5",
     "dojo-has": "^2.0.0-alpha.5",
     "dojo-loader": "^2.0.0-beta.7",
@@ -48,6 +44,7 @@
     "immutable": "^3.8.1",
     "maquette": ">=2.3.7 <=2.4.1",
     "todomvc-app-css": "^2.0.6",
-    "todomvc-common": "^1.0.2"
+    "todomvc-common": "^1.0.2",
+    "maquette": "^2.3.2"
   }
 }
