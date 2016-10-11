@@ -1,10 +1,8 @@
-import { addTodo } from '../../src/actions/storeTodoActions';
 import { assert } from 'chai';
+import * as bdd from 'intern/lib/interfaces/bdd';
 
-declare const test: any;
-
-test.describe('the thing being tested', function () {
-	test.it('should do foo', function () {
-		assert.equal(typeof addTodo, 'function');
+bdd.describe('main', () => {
+	bdd.it('should do something', () => {
+		assert.isTrue(true);
 	});
 });

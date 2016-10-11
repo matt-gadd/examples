@@ -1,10 +1,9 @@
-import { addTodo } from '../../src/actions/storeTodoActions';
 import { assert } from 'chai';
+import * as registerSuite from 'intern/lib/interfaces/object';
 
-declare const test: any;
-
-test.describe('foo foo', function () {
-	test.it('should do foo', function () {
-		assert.equal(typeof addTodo, 'function');
-	});
+registerSuite({
+	name: 'main',
+	'something': function () {
+		assert.isTrue(true);
+	}
 });
