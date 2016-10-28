@@ -1,5 +1,5 @@
 import createButton from 'dojo-widgets/createButton';
-import createRenderMixin, { RenderMixin, RenderMixinState, RenderMixinOptions } from '../createRenderBlahMixin';
+import createRenderMixin, { RenderMixin, RenderMixinState, RenderMixinOptions } from '../createRenderMixin';
 import { VNode } from 'maquette';
 import createCheckboxInput from './createCheckboxInput';
 import createFocusableTextInput from './createFocusableTextInput';
