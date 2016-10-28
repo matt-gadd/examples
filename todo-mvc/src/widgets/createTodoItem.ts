@@ -27,19 +27,12 @@ const createTodoItem = createRenderMixin
 		getChildrenNodes(this: TodoItem): VNode[] {
 (<any> window).a = this;
 			const checkBoxValue = this.state.completed;
-
-			const widgets = [
-				d(createCheckboxInput, { state: { classes: [ 'toggle' ], checked: checkBoxValue } }),
-				d('label', { innerHTML: 'Hello World' }),
-				d(createButton, { state: { classes: [ 'destroy' ] } })
-			];
-
-			if (checkBoxValue) {
-				widgets.pop();
-			}
-
 			return [
-				d('div.view', widgets),
+				d('div.view', [
+					d(createCheckboxInput, { state: { classes: [ 'toggle' ], checked: checkBoxValue } }),
+					d('label', { innerHTML: 'Hello World' }),
+					d(createButton, { state: { classes: [ 'destroy' ] } })
+				]),
 				d(createFocusableTextInput, { state: { classes: [ 'edit' ] } })
 			];
 		},
