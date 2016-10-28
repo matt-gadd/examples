@@ -7,7 +7,7 @@ export default function d(tagNameOrFactory: any, optionsOrChildren: any, childre
 
 	if (typeof tagNameOrFactory === 'string') {
 		return {
-			children: children,
+			children: children.filter((child: any) => child),
 			render() {
 				return h(tagNameOrFactory, options, this.children);
 			}
