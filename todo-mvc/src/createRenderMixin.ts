@@ -222,8 +222,9 @@ const createRenderMixin = createStateful
 
 			factoryAndRender(this: RenderMixin<RenderMixinState>, child: any): any {
 				if (child.factory) {
+					const { options: { key } } = child;
 					const childrenMap = childrenCache.get(this);
-					const cachedChild = childrenMap.get(child.factory);
+					const cachedChild = key ? childrenMap.get(key) : childrenMap.get(child.factory);
 					const factory = child.factory;
 					if (cachedChild) {
 						const { state } = child.options;
@@ -231,10 +232,13 @@ const createRenderMixin = createStateful
 						child.setState(state);
 					} else {
 						child = child.create();
-						childrenMap.set(factory, child);
+						childrenMap.set(key || factory, child);
 					}
 					const newChildrenMap = newChildrenCache.get(this);
-					newChildrenMap.set(factory, child);
+					if (!key && newChildrenMap.has(factory)) {
+						console.error('must provide unique keys when using the same widget factory multiple times');
+					}
+					newChildrenMap.set(key || factory, child);
 				}
 				if (child.children) {
 					child.children = child.children.map((child: any) => {

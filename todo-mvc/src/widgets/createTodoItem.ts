@@ -30,7 +30,7 @@ const createTodoItem = createRenderMixin
 
 		getChildrenNodes(this: TodoItem): VNode[] {
 			const state = this.state;
-			const checkBoxValue = state.completed;
+			const checked = state.completed;
 			const label = state.label;
 			const focused = state.editing;
 
@@ -38,12 +38,17 @@ const createTodoItem = createRenderMixin
 				d('div.view', [
 					d(createCheckboxInput, {
 						listeners: { change: () => todoToggleComplete.do(state) },
-						state: { classes: [ 'toggle' ], checked: checkBoxValue }
+						state: { classes: [ 'toggle' ], checked }
 					}),
 					d(createLabel, {
+						key: 'label-1',
 						listeners: { dblclick: () => todoEdit.do(state) },
 						state: { label }
 					}),
+					checked ? d(createLabel, {
+						key: 'label-2',
+						state: { label: label + ', second' }
+					}) : false,
 					d(createButton, {
 						listeners: { click: () => todoRemove.do(state) },
 						state: { classes: [ 'destroy' ] }
