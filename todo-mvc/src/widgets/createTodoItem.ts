@@ -1,9 +1,10 @@
 import createButton from 'dojo-widgets/createButton';
+import createWidget from 'dojo-widgets/createWidget';
 import createRenderMixin, { RenderMixin, RenderMixinState, RenderMixinOptions } from '../createRenderMixin';
 import { VNode } from 'maquette';
 import createCheckboxInput from './createCheckboxInput';
 import createFocusableTextInput from './createFocusableTextInput';
-import { todoRemove, todoToggleComplete } from '../actions/userActions';
+import { todoRemove, todoToggleComplete, todoEditInput, todoSave, todoEdit } from '../actions/userActions';
 import d from '../d';
 
 type TodoItemState = RenderMixinState & {
@@ -14,6 +15,8 @@ type TodoItemState = RenderMixinState & {
 export type TodoItemOptions = RenderMixinOptions<TodoItemState>;
 
 export type TodoItem = RenderMixin<TodoItemState>;
+
+const createLabel = createWidget.extend({ tagName: 'label' });
 
 const createTodoItem = createRenderMixin
 	.extend({
@@ -26,23 +29,31 @@ const createTodoItem = createRenderMixin
 		},
 
 		getChildrenNodes(this: TodoItem): VNode[] {
-			const checkBoxValue = this.state.completed;
-			const label = this.state.label;
-			const focused = this.state.editing;
+			const state = this.state;
+			const checkBoxValue = state.completed;
+			const label = state.label;
+			const focused = state.editing;
 
 			return [
 				d('div.view', [
 					d(createCheckboxInput, {
-						listeners: { change: () => todoToggleComplete.do(this.state) },
+						listeners: { change: () => todoToggleComplete.do(state) },
 						state: { classes: [ 'toggle' ], checked: checkBoxValue }
 					}),
-					d('label', { innerHTML: label }),
+					d(createLabel, {
+						listeners: { dblclick: () => todoEdit.do(state) },
+						state: { label }
+					}),
 					d(createButton, {
-						listeners: { click: () => todoRemove.do(this.state) },
+						listeners: { click: () => todoRemove.do(state) },
 						state: { classes: [ 'destroy' ] }
 					})
 				]),
 				d(createFocusableTextInput, {
+					listeners: {
+						blur: (evt: Event) => todoSave.do({ state, evt }),
+						keyup: (evt: Event) => todoEditInput.do({ state, evt })
+					},
 					state: { value: label, focused, classes: [ 'edit' ] }
 				})
 			];
