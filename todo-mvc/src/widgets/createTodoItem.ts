@@ -27,13 +27,11 @@ const createTodoItem = createRenderMixin
 			}
 			return this.state.completed ? [ 'completed', ...classes ] : classes;
 		},
-
 		getChildrenNodes(this: TodoItem): VNode[] {
 			const state = this.state;
 			const checked = state.completed;
 			const label = state.label;
 			const focused = state.editing;
-
 			return [
 				d('div.view', [
 					d(createCheckboxInput, {
@@ -63,8 +61,6 @@ const createTodoItem = createRenderMixin
 				})
 			];
 		},
-
 		tagName: 'li'
 	});
-
 export default createTodoItem;
