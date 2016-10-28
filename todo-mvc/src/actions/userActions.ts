@@ -40,8 +40,8 @@ export const todoEdit = createAction({
 });
 
 export const todoEditInput = createAction({
-	do(options: { event: FormInputEvent, state: any }) {
-		const { event: { keyCode } } = options;
+	do(options: { evt: FormInputEvent, state: any }) {
+		const { evt: { keyCode } } = options;
 		if (keyCode === 13) {
 			return todoSave.do(options);
 		}
@@ -53,11 +53,11 @@ export const todoEditInput = createAction({
 
 export const todoSave = createAction({
 	do({
-		event: {
+		evt: {
 			target: { value: label }
 		},
 		state
-	}: { event: FormInputEvent, state: any }) {
+	}: { evt: FormInputEvent, state: any }) {
 		if (!label) {
 			return deleteTodo.do(state);
 		}
