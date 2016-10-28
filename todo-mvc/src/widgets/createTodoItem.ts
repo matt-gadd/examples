@@ -3,6 +3,7 @@ import createRenderMixin, { RenderMixin, RenderMixinState, RenderMixinOptions } 
 import { VNode } from 'maquette';
 import createCheckboxInput from './createCheckboxInput';
 import createFocusableTextInput from './createFocusableTextInput';
+import { todoRemove, todoToggleComplete } from '../actions/userActions';
 import d from '../d';
 
 type TodoItemState = RenderMixinState & {
@@ -25,15 +26,25 @@ const createTodoItem = createRenderMixin
 		},
 
 		getChildrenNodes(this: TodoItem): VNode[] {
-(<any> window).a = this;
 			const checkBoxValue = this.state.completed;
+			const label = this.state.label;
+			const focused = this.state.editing;
+
 			return [
 				d('div.view', [
-					d(createCheckboxInput, { state: { classes: [ 'toggle' ], checked: checkBoxValue } }),
-					d('label', { innerHTML: 'Hello World' }),
-					d(createButton, { state: { classes: [ 'destroy' ] } })
+					d(createCheckboxInput, {
+						listeners: { change: () => todoToggleComplete.do(this.state) },
+						state: { classes: [ 'toggle' ], checked: checkBoxValue }
+					}),
+					d('label', { innerHTML: label }),
+					d(createButton, {
+						listeners: { click: () => todoRemove.do(this.state) },
+						state: { classes: [ 'destroy' ] }
+					})
 				]),
-				d(createFocusableTextInput, { state: { classes: [ 'edit' ] } })
+				d(createFocusableTextInput, {
+					state: { value: label, focused, classes: [ 'edit' ] }
+				})
 			];
 		},
 
