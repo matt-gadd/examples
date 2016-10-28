@@ -262,7 +262,6 @@ const createRenderMixin = createStateful
 			},
 
 			render(this: RenderMixin<RenderMixinState>): VNode {
-				console.log('rendering');
 				const cachedRender: RenderMixin<RenderMixinState> = this;
 				let cached = renderCache.get(cachedRender);
 				if (!dirtyMap.get(cachedRender) && cached) {
