@@ -47,6 +47,7 @@ const createTodoItem = createRenderMixin
 						key: 'label-2',
 						state: { label: label + ', second' }
 					}) : false,
+					d('label', { innerHTML: 'plain old maquette' }),
 					d(createButton, {
 						listeners: { click: () => todoRemove.do(state) },
 						state: { classes: [ 'destroy' ] }
