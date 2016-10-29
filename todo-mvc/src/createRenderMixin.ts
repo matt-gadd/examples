@@ -271,7 +271,9 @@ const createRenderMixin = createStateful
 				else {
 					const children: any = cachedRender.getChildrenNodes();
 					newChildrenCache.set(this, new Map());
-					const vNodes: VNode[] = children.map((child: any) => this.getVNode(child));
+					const vNodes: VNode[] = children
+						.filter((child: any) => child)
+						.map((child: any) => this.getVNode(child));
 					this.pruneChildren();
 					cached = h(
 						cachedRender.getSelectorAndWidgetClasses(),

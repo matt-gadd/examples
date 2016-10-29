@@ -1,7 +1,6 @@
 import createButton from 'dojo-widgets/createButton';
 import createWidget from 'dojo-widgets/createWidget';
 import createRenderMixin, { RenderMixin, RenderMixinState, RenderMixinOptions } from '../createRenderMixin';
-import { VNode } from 'maquette';
 import createCheckboxInput from './createCheckboxInput';
 import createFocusableTextInput from './createFocusableTextInput';
 import { todoRemove, todoToggleComplete, todoEditInput, todoSave, todoEdit } from '../actions/userActions';
@@ -27,7 +26,7 @@ const createTodoItem = createRenderMixin
 			}
 			return this.state.completed ? [ 'completed', ...classes ] : classes;
 		},
-		getChildrenNodes(this: TodoItem): VNode[] {
+		getChildrenNodes(this: TodoItem): any[] {
 			const state = this.state;
 			const checked = state.completed;
 			const label = state.label;
