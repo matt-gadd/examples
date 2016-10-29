@@ -62,7 +62,7 @@ export interface Render {
 	 */
 	getChildrenNodes(): (VNode | string)[];
 
-	factoryAndRender(child: any): any;
+	getVNode(child: any): VNode;
 
 	manageChildren(): void;
 
@@ -220,7 +220,7 @@ const createRenderMixin = createStateful
 
 			parent: null,
 
-			factoryAndRender(this: RenderMixin<RenderMixinState>, child: any): VNode {
+			getVNode(this: RenderMixin<RenderMixinState>, child: any): VNode {
 				if (child.factory) {
 					const { options: { key } } = child;
 					const childrenMap = childrenCache.get(this);
@@ -233,6 +233,7 @@ const createRenderMixin = createStateful
 					} else {
 						child = child.create();
 						childrenMap.set(key || factory, child);
+						this.own(child);
 					}
 					const newChildrenMap = newChildrenCache.get(this);
 					if (!key && newChildrenMap.has(factory)) {
@@ -242,7 +243,7 @@ const createRenderMixin = createStateful
 				}
 				if (child.children) {
 					child.children = child.children.map((child: any) => {
-						return this.factoryAndRender(child);
+						return this.getVNode(child);
 					});
 				}
 				return child.render();
@@ -268,14 +269,14 @@ const createRenderMixin = createStateful
 					return cached;
 				}
 				else {
-					let children: any = cachedRender.getChildrenNodes();
+					const children: any = cachedRender.getChildrenNodes();
 					newChildrenCache.set(this, new Map());
-					children = children.map((child: any) => this.factoryAndRender(child));
+					const vNodes: VNode[] = children.map((child: any) => this.getVNode(child));
 					this.manageChildren();
 					cached = h(
 						cachedRender.getSelectorAndWidgetClasses(),
 						cachedRender.getNodeAttributes(),
-						children
+						vNodes
 					);
 					renderCache.set(cachedRender, cached);
 					dirtyMap.set(cachedRender, false);
