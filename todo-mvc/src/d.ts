@@ -18,7 +18,7 @@ export default function d(tagNameOrFactory: any, optionsOrChildren: any, childre
 			factory: tagNameOrFactory,
 			options: options,
 			create() {
-				console.log('called create');
+				console.log('factoried widget');
 				return tagNameOrFactory(options);
 			}
 		};
