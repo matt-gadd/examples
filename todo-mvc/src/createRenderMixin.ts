@@ -220,7 +220,7 @@ const createRenderMixin = createStateful
 
 			parent: null,
 
-			factoryAndRender(this: RenderMixin<RenderMixinState>, child: any): any {
+			factoryAndRender(this: RenderMixin<RenderMixinState>, child: any): VNode {
 				if (child.factory) {
 					const { options: { key } } = child;
 					const childrenMap = childrenCache.get(this);
