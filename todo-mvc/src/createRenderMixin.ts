@@ -64,7 +64,7 @@ export interface Render {
 
 	getVNode(child: any): VNode;
 
-	manageChildren(): void;
+	pruneChildren(): void;
 
 	/**
 	 * The ID of the current widget
@@ -249,7 +249,7 @@ const createRenderMixin = createStateful
 				return child.render();
 			},
 
-			manageChildren(this: RenderMixin<RenderMixinState>): void {
+			pruneChildren(this: RenderMixin<RenderMixinState>): void {
 				const childrenMap = childrenCache.get(this);
 				const newChildrenMap = newChildrenCache.get(this);
 
@@ -272,7 +272,7 @@ const createRenderMixin = createStateful
 					const children: any = cachedRender.getChildrenNodes();
 					newChildrenCache.set(this, new Map());
 					const vNodes: VNode[] = children.map((child: any) => this.getVNode(child));
-					this.manageChildren();
+					this.pruneChildren();
 					cached = h(
 						cachedRender.getSelectorAndWidgetClasses(),
 						cachedRender.getNodeAttributes(),
