@@ -28,9 +28,7 @@ const createTodoList = createRenderMixin
 			const todos = this.state.todos || [];
 			return todos
 				.filter((todo: TodoItemState) => filter(this.state.activeFilter, todo))
-				.map((todo: TodoItemState) => {
-					return d(createTodoItem, { key: todo.id, state: todo });
-				});
+				.map((todo: TodoItemState) => d(createTodoItem, { key: todo.id, state: todo }));
 		},
 		tagName: 'ul'
 	});
