@@ -6,7 +6,7 @@ import createFocusableTextInput from './createFocusableTextInput';
 import { todoRemove, todoToggleComplete, todoEditInput, todoSave, todoEdit } from '../actions/userActions';
 import d from '../d';
 
-type TodoItemState = RenderMixinState & {
+export type TodoItemState = RenderMixinState & {
 	editing?: boolean;
 	completed?: boolean;
 };
@@ -31,6 +31,7 @@ const createTodoItem = createRenderMixin
 			const checked = state.completed;
 			const label = state.label;
 			const focused = state.editing;
+			/*const someRandomText = [ 'foo', 'bar', 'qux' ];*/
 			return [
 				d('div.view', [
 					d(createCheckboxInput, {
@@ -42,11 +43,26 @@ const createTodoItem = createRenderMixin
 						listeners: { dblclick: () => todoEdit.do(state) },
 						state: { label }
 					}),
+/*
 					checked ? d(createLabel, {
 						key: 'label-2',
 						state: { label: label + ', second' }
 					}) : false,
+*/
+/*
+					d('div', [
+						...someRandomText.map((value, index) => {
+							return d(createLabel, {
+								key: 'label${index}',
+								listeners: { dblclick: () => todoEdit.do(state) },
+								state: { label: `${value}` }
+							});
+						})
+					]),
+*/
+/*
 					d('label', { innerHTML: 'plain old maquette' }),
+*/
 					d(createButton, {
 						listeners: { click: () => todoRemove.do(state) },
 						state: { classes: [ 'destroy' ] }
