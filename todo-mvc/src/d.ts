@@ -3,7 +3,7 @@ import { h } from 'maquette';
 export default function d(tagNameOrFactory: any, optionsOrChildren: any, children?: any): any {
 	const isOptionsArray = Array.isArray(optionsOrChildren);
 	const options = isOptionsArray ? {} : optionsOrChildren;
-	children = children || isOptionsArray ? optionsOrChildren : [];
+	children = children || (isOptionsArray ? optionsOrChildren : []);
 
 	if (typeof tagNameOrFactory === 'string') {
 		return {

@@ -1,79 +1,50 @@
 import createButton from 'dojo-widgets/createButton';
-import createParentMapMixin, { ParentMap, ParentMapMixinOptions } from 'dojo-widgets/mixins/createParentMapMixin';
-import createRenderMixin, { RenderMixin, RenderMixinOptions, RenderMixinState } from 'dojo-widgets/mixins/createRenderMixin';
-import createStatefulChildrenMixin, { StatefulChildrenState, StatefulChildrenOptions } from 'dojo-widgets/mixins/createStatefulChildrenMixin';
-import { Child } from 'dojo-widgets/mixins/interfaces';
-
-import { h, VNode } from 'maquette';
+import createRenderMixin, { RenderMixin, RenderMixinState, RenderMixinOptions } from '../createRenderMixin';
+import d from '../d';
 
 import { clearCompleted } from '../actions/userActions';
 import createTodoFilter from './createTodoFilter';
 
-export type TodoFooterState = RenderMixinState & StatefulChildrenState & {
+export type TodoFooterState = RenderMixinState & {
 	activeFilter?: string;
 	activeCount?: number;
 	completedCount?: number;
 };
 
-export type TodoFooterOptions = RenderMixinOptions<TodoFooterState> & ParentMapMixinOptions<Child> & StatefulChildrenOptions<Child, TodoFooterState>;
+export type TodoFooterOptions = RenderMixinOptions<TodoFooterState>;
 
-export type TodoFooter = RenderMixin<TodoFooterState> & ParentMap<RenderMixin<TodoFooterState>>;
-
-function manageChildren(this: TodoFooter) {
-	const filterWidget = this.children.get('filter');
-	const buttonWidget = this.children.get('button');
-
-	filterWidget.setState({
-		activeFilter: this.state.activeFilter
-	});
-
-	const clearCompletedButtonClasses = ['clear-completed'];
-	if (this.state.completedCount === 0) {
-		clearCompletedButtonClasses.push('hidden');
-	}
-
-	buttonWidget.setState({
-		classes: clearCompletedButtonClasses
-	});
-}
+export type TodoFooter = RenderMixin<TodoFooterState>;
 
 const createTodoFooter = createRenderMixin
-	.mixin(createStatefulChildrenMixin)
-	.mixin({
-		mixin: createParentMapMixin,
-		initialize(instance, options) {
-			const filterWidget = createTodoFilter({
-				state: {
-					id: 'filter',
-					classes: ['filters']
-				}
-			});
-			const clearCompletedButton = createButton({
-				state: {
-					id: 'button',
-					label: 'Clear completed',
-					classes: ['clear-completed']
-				},
-				listeners: {
-					click: clearCompleted
-				}
-			});
-			instance.append([filterWidget, clearCompletedButton]);
-			instance.on('statechange', manageChildren);
-		}
-	})
 	.extend({
-		getChildrenNodes(this: TodoFooter): VNode[] {
+		getChildrenNodes(this: TodoFooter): any[] {
 			const activeCount = this.state.activeCount;
+			const activeFilter = this.state.activeFilter;
 			const countLabel = activeCount === 1 ? 'item' : 'items';
+			const clearButtonClasses = [ 'clear-completed' ];
+
+			if (this.state.completedCount === 0) {
+				clearButtonClasses.push('hidden');
+			}
 
 			return [
-				h('span', {'class': 'todo-count'}, [
-					h('strong', [activeCount + ' ']),
-					h('span', [countLabel + ' left'])
+				d('span', { class: 'todo-count'}, [
+					d('strong', { innerHTML: [activeCount + ' '] }),
+					d('span', { innerHTML: [countLabel + ' left'] })
 				]),
-				this.children.get('filter').render(),
-				this.children.get('button').render()
+				d(createTodoFilter, {
+					state: { id: 'filter', classes: ['filters'], activeFilter }
+				}),
+				d(createButton, {
+					state: {
+						id: 'button',
+						label: 'Clear completed',
+						classes: ['clear-completed']
+					},
+					listeners: {
+						click: clearCompleted
+					}
+				})
 			];
 		},
 
