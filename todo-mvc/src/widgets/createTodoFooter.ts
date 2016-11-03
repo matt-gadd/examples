@@ -1,6 +1,7 @@
 import createButton from 'dojo-widgets/createButton';
 import createRenderMixin, { RenderMixin, RenderMixinState, RenderMixinOptions } from '../createRenderMixin';
 import d from '../d';
+import bundle from './nls/createTodoFooter';
 
 import { clearCompleted } from '../actions/userActions';
 import createTodoFilter from './createTodoFilter';
@@ -16,12 +17,19 @@ export type TodoFooterOptions = RenderMixinOptions<TodoFooterState>;
 export type TodoFooter = RenderMixin<TodoFooterState>;
 
 const createTodoFooter = createRenderMixin
+	.mixin({
+		initialize(todoFooter: TodoFooter) {
+			/*i18n.instances.push(todoFooter);*/
+		}
+	})
 	.extend({
 		getChildrenNodes(this: TodoFooter): any[] {
+(<any> window).footer = this;
 			const activeCount = this.state.activeCount;
 			const activeFilter = this.state.activeFilter;
 			const countLabel = activeCount === 1 ? 'item' : 'items';
 			const clearButtonClasses = [ 'clear-completed' ];
+			const messages = bundle.get();
 
 			if (this.state.completedCount === 0) {
 				clearButtonClasses.push('hidden');
@@ -29,17 +37,17 @@ const createTodoFooter = createRenderMixin
 
 			return [
 				d('span', { class: 'todo-count'}, [
-					d('strong', { innerHTML: [activeCount + ' '] }),
-					d('span', { innerHTML: [countLabel + ' left'] })
+					d('strong', { innerHTML: [ activeCount + ' ' ] }),
+					d('span', { innerHTML: [ countLabel + ' left' ] })
 				]),
 				d(createTodoFilter, {
-					state: { id: 'filter', classes: ['filters'], activeFilter }
+					state: { id: 'filter', classes: [ 'filters' ], activeFilter }
 				}),
 				d(createButton, {
 					state: {
 						id: 'button',
-						label: 'Clear completed',
-						classes: ['clear-completed']
+						label: messages.clear,
+						classes: [ 'clear-completed' ]
 					},
 					listeners: {
 						click: clearCompleted
@@ -47,7 +55,6 @@ const createTodoFooter = createRenderMixin
 				})
 			];
 		},
-
 		tagName: 'footer'
 	});
 
