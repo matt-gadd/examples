@@ -42,7 +42,7 @@ const createTodoItem = createRenderMixin
 					break;
 			}
 			return [
-				d('div.view', [
+				d('div.view.evil', [
 					d(createCheckboxInput, {
 						listeners: { change: () => todoToggleComplete.do(state) },
 						state: { classes: [ 'toggle' ], checked }

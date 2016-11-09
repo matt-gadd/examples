@@ -56,8 +56,9 @@ export const putTodo = createAction({
 					.patch({ id: 'todo-list', children });
 			}
 
+			const factoryType = Math.floor(Math.random() * 2) ? 'todo-item' : 'evil-todo-item';
 			return widgetStore
-				.put(assign({}, <any> item, { type: 'todo-item' }))
+				.put(assign({}, <any> item, { type: factoryType }))
 				.patch({id: 'todo-list', children: [...children, item.id]});
 		}
 	}

@@ -241,6 +241,14 @@ const createRenderMixin = createStateful
 					}
 					newChildrenMap.set(key || factory, child);
 				}
+				else if (child.instance) {
+					child = child.instance;
+					const childrenMap = childrenCache.get(this);
+					const newChildrenMap = newChildrenCache.get(this);
+					childrenMap.set(child, child);
+					this.own(child);
+					newChildrenMap.set(child, child);
+				}
 				if (child.children) {
 					child.children = child.children.map((child: any) => {
 						return this.getVNode(child);

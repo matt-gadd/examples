@@ -5,6 +5,7 @@ import { updateHeaderAndFooter, deleteTodo, putTodo } from '../actions/widgetSto
 export interface Item {
 	id: string;
 	label: string;
+	priority: number;
 	completed?: boolean;
 }
 

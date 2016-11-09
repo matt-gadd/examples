@@ -12,7 +12,13 @@ import createCheckboxInput from './widgets/createCheckboxInput';
 import createFocusableTextInput from './widgets/createFocusableTextInput';
 import createTodoFooter from './widgets/createTodoFooter';
 import createTodoItem from './widgets/createTodoItem';
+import createEvilTodoItem from './widgets/createEvilTodoItem';
 import createTodoList from './widgets/createTodoList';
+
+import { addFactory } from './d';
+
+addFactory('todo-item', createTodoItem);
+addFactory('evil-todo-item', createEvilTodoItem);
 
 const app = createApp({ defaultWidgetStore: widgetStore });
 

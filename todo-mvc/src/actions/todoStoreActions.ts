@@ -5,7 +5,11 @@ import todoStore, { Item } from '../stores/todoStore';
 
 export const addTodo = createAction({
 	do({ label }: { label: string }) {
-		return todoStore.add({ id: `${Date.now()}`, label });
+		return todoStore.add({
+			id: `${Date.now()}`,
+			label,
+			priority: Math.ceil(Math.random() * 3)
+		});
 	}
 });
 
