@@ -12,6 +12,22 @@ import createTodoItem from './widgets/createTodoItem';
 import createTodoList from './widgets/createTodoList';
 import { Widget, WidgetState } from 'dojo-interfaces/widgetBases';
 import { VNodeProperties } from 'dojo-interfaces/vdom';
+/*import load from 'dojo-core/load';
+
+// a build plugin would inject this
+require('bundle!./lazy');
+
+load('dojo-widgets/createButton').then(([ result ]) => {
+	console.log(result.default);
+});
+
+load('src/widgets/createTodoItem').then(([ result ]) => {
+	console.log(result.default);
+});
+
+load('src/lazy').then(([ result ]) => {
+	console.log(result.default);
+});*/
 
 const app = createApp({ defaultWidgetStore: widgetStore });
 

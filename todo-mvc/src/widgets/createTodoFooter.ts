@@ -4,6 +4,9 @@ import d from 'dojo-widgets/util/d';
 import { clearCompleted } from '../actions/userActions';
 import createTodoFilter from './createTodoFilter';
 import createButton from 'dojo-widgets/createButton';
+import load from 'dojo-core/load';
+// a build plugin would inject this
+require('bundle!../lazy');
 
 export type TodoFooterState = WidgetState & {
 	activeFilter?: string;
@@ -33,7 +36,22 @@ const createTodoFooter = createWidgetBase
 							activeFilter
 						}
 					}),
+					d(createButton, {
+						id: 'lazy-load',
+						listeners: {
+							click: () => {
+								load('src/lazy').then(([ result ]) => {
+									console.log(result.default);
+								});
+							}
+						},
+						state: {
+							label: 'Lazy Load',
+							classes: [ 'clear-completed' ]
+						}
+					}),
 					completedCount ? d(createButton, {
+						id: 'completed-count',
 						listeners: {
 							click: clearCompleted
 						},
