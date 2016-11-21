@@ -6,7 +6,7 @@ import createTodoFilter from './createTodoFilter';
 import createButton from 'dojo-widgets/createButton';
 import load from 'dojo-core/load';
 // a build plugin would inject this
-require('bundle!../lazy');
+require('bundle?lazy!../lazy');
 
 export type TodoFooterState = WidgetState & {
 	activeFilter?: string;
