@@ -5,7 +5,7 @@ import { clearCompleted } from '../actions/userActions';
 import createTodoFilter from './createTodoFilter';
 import createButton from 'dojo-widgets/createButton';
 import load from 'dojo-core/load';
-// a build plugin would inject this
+// a build plugin would inject this (it can actually be injected anywhere)
 require('bundle?lazy!../lazy');
 
 export type TodoFooterState = WidgetState & {

@@ -8,7 +8,6 @@ import widgetStore from './stores/widgetStore';
 import createCheckboxInput from './widgets/createCheckboxInput';
 import createFocusableTextInput from './widgets/createFocusableTextInput';
 import createTodoFooter from './widgets/createTodoFooter';
-import createTodoItem from './widgets/createTodoItem';
 import createTodoList from './widgets/createTodoList';
 import { Widget, WidgetState } from 'dojo-interfaces/widgetBases';
 import { VNodeProperties } from 'dojo-interfaces/vdom';
@@ -77,10 +76,6 @@ app.loadDefinition({
 		{
 			name: 'todo-title',
 			factory: createTitle
-		},
-		{
-			name: 'todo-item',
-			factory: createTodoItem
 		}
 	]
 });
