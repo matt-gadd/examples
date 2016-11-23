@@ -14,15 +14,14 @@ GlobalModuleRegistryPlugin.prototype.apply = function(compiler) {
 
 	compiler.plugin('compilation', function(compilation, params) {
 
-		compilation.plugin("optimize-chunk-assets", function(chunks, callback) {
-			chunks.forEach((chunk) => {
-				if (!chunk.initial) return;
-				chunk.files.forEach(function(file) {
-					const source = `__modules__ = ${ JSON.stringify(idMap) };`;
-					compilation.assets[file] = new ConcatSource(source, '\n', compilation.assets[file]);
-				});
-			});
-			callback();
+		compilation.moduleTemplate.plugin('module', (source, module) => {
+			const load = idMap['dojo-core/load'] || { id: null };
+			module = module || {};
+			if (module.id === load.id) {
+				const moduleMap = `var __modules__ = ${ JSON.stringify(idMap) };`;
+				return new ConcatSource(moduleMap, '\n', source);
+			}
+			return source;
 		});
 
 		compilation.plugin('optimize-module-ids', function(modules) {
