@@ -11,6 +11,9 @@ GlobalModuleRegistryPlugin.prototype.apply = function(compiler) {
 
 	const idMap = {};
 	const basePath = this.options.basePath;
+	const relative = /^\.(\.*)\//;
+	const nodeModules = /\/node_modules\//;
+	const bundleLoader = /bundle.*\!/;
 
 	compiler.plugin('compilation', function(compilation, params) {
 
@@ -26,19 +29,20 @@ GlobalModuleRegistryPlugin.prototype.apply = function(compiler) {
 
 		compilation.plugin('optimize-module-ids', function(modules) {
 			modules.forEach((module) => {
-				if (module.rawRequest) {
-					if(!module.rawRequest.match(/^\W/)) {
-						let modulePath = module.rawRequest;
+				const { rawRequest, userRequest, context } = module;
+				if (rawRequest) {
+					if(!rawRequest.match(/^\W/)) {
+						let modulePath = rawRequest;
 						let lazy = false;
-						if (module.rawRequest.match(/bundle.*\!/)) {
-							const afterLoader = module.userRequest.split('!')[1];
+						if (rawRequest.match(bundleLoader)) {
+							const afterLoader = userRequest.split('!')[1];
 							modulePath = stripPath(basePath, afterLoader);
 							lazy = true;
 						}
 						idMap[modulePath] = { id: module.id, lazy };
 					}
-					else if (module.rawRequest.match(/^\.(\.*)\//) && !module.context.match(/\/node_modules\//)) {
-						const modulePath = stripPath(basePath, module.userRequest);
+					else if (rawRequest.match(relative) && !context.match(nodeModules)) {
+						const modulePath = stripPath(basePath, userRequest);
 						idMap[modulePath] = { id: module.id, lazy: false };
 					}
 				}
