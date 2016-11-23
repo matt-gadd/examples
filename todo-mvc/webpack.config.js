@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const path = require('path');
 const basePath = process.cwd();
-const GlobalModuleRegistryPlugin = require('./GlobalModuleRegistryPlugin');
+const DojoLoadPlugin = require('./DojoLoadPlugin');
 
 module.exports = {
 	debug: true,
@@ -50,7 +50,7 @@ module.exports = {
 		]),
 		new webpack.optimize.DedupePlugin(),
 		/*new webpack.optimize.UglifyJsPlugin({ compress: { warnings: false }}),*/
-		new GlobalModuleRegistryPlugin({ basePath }),
+		new DojoLoadPlugin({ basePath }),
 		new HtmlWebpackPlugin ({
 			inject: true,
 			chunks: [ 'src/main' ],
