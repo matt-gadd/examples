@@ -3,6 +3,8 @@ import { Widget, WidgetOptions, WidgetState, DNode } from 'dojo-interfaces/widge
 import d from 'dojo-widgets/util/d';
 import { TodoItemState } from './createTodoItem';
 import load from 'dojo-core/load';
+
+// would be automatically inject from wherever in a build, just like other webpack plugins/loaders
 require('bundle?lazy!./createTodoItem');
 
 type TodoListState = WidgetState & {
@@ -25,17 +27,23 @@ function filter(filterName: string, todo: TodoItemState): boolean {
 	}
 }
 
+function loadingIndicator() {
+	return d('div', { classes: { spinner: true } }, [
+		d('div', { classes: { rect1: true }} ),
+		d('div', { classes: { rect2: true } }),
+		d('div', { classes: { rect3: true } }),
+		d('div', { classes: { rect4: true } }),
+		d('div', { classes: { rect5: true } })
+	]);
+}
+
 const fromRegistry = function(path: string) {
 	return createWidgetBase
 	.mixin({
 		initialize(instance: any, options: any) {
 			load(path).then(([ a ]) => {
 				const widget = a.default || a;
-				instance.setState({
-					loaded: true,
-					widget,
-					options
-				});
+				instance.setState({ loaded: true, widget, options });
 			});
 		}
 	})
@@ -46,15 +54,7 @@ const fromRegistry = function(path: string) {
 				if (loaded) {
 					return [ d(widget, options) ];
 				}
-				return[
-					d('div', { classes: { spinner: true } }, [
-						d('div', { classes: { rect1: true }} ),
-						d('div', { classes: { rect2: true } }),
-						d('div', { classes: { rect3: true } }),
-						d('div', { classes: { rect4: true } }),
-						d('div', { classes: { rect5: true } })
-					])
-				];
+				return [ loadingIndicator() ];
 			}
 		],
 		tagName: 'div'
@@ -73,10 +73,6 @@ const createTodoList = createWidgetBase
 						id: todo.id,
 						state: todo
 					}));
-
-					/**
-					 * d(w);
-					 */
 				}
 		],
 		tagName: 'ul'
