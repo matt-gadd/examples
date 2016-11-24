@@ -70,7 +70,7 @@ const createTodoList = createWidgetBase
 				const todos = this.state.todos || [];
 				return todos
 					.filter((todo) => filter(activeFilter, todo))
-					.map((todo) => d(fromRegistry('./createTodoItem'), {
+					.map((todo) => d(fromRegistry('./../widgets/createTodoItem'), {
 						id: todo.id,
 						state: todo
 					}));

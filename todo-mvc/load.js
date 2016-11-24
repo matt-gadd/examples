@@ -17,16 +17,16 @@ module.exports = {
 				var result = base;
 				if (isRelative) {
 					if (mid.match(/^\.\//)) {
-						mid = mid.replace(/\.\//, '/');
+						mid = mid.replace(/\.\//, '');
 					}
 					var up = mid.match(/^(\.\.\/)/);
 					if (up) {
 						var chunks = base.split('/');
 						chunks.splice(chunks.length - (up.length - 1));
 						result = chunks.join('/');
-						mid = '/' + mid.replace(/\.\.\//g, '');
+						mid = mid.replace(/\.\.\//g, '');
 					}
-					mid = result + mid;
+					mid = result + '/' + mid;
 				}
 				return mid;
 			})
