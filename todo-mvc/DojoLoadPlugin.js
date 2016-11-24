@@ -15,9 +15,19 @@ GlobalModuleRegistryPlugin.prototype.apply = function(compiler) {
 	const nodeModules = /\/node_modules\//;
 	const bundleLoader = /bundle.*\!/;
 
+	compiler.parser.plugin("expression require", function (expr) {
+		this.state.current.meta.hasDynamicRequire = true;
+		return true;
+	});
+
 	compiler.plugin('compilation', function(compilation, params) {
 
 		compilation.moduleTemplate.plugin('module', (source, module) => {
+			if (module.meta && module.meta.hasDynamicRequire) {
+				const path = stripPath(basePath, module.userRequest);
+				const require = `var require = function() { return '${path}'; };`;
+				return new ConcatSource(require, '\n', source);
+			}
 			const load = idMap['dojo-core/load'] || { id: null };
 			module = module || {};
 			if (module.id === load.id) {

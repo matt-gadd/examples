@@ -41,9 +41,10 @@ const fromRegistry = function(path: string) {
 	return createWidgetBase
 	.mixin({
 		initialize(instance: any, options: any) {
-			load(path).then(([ a ]) => {
+			load(<any> require, path, 'src/lazy').then(([ a, b ]) => {
 				const widget = a.default || a;
 				instance.setState({ loaded: true, widget, options });
+				console.log(b.default);
 			});
 		}
 	})
@@ -69,7 +70,7 @@ const createTodoList = createWidgetBase
 				const todos = this.state.todos || [];
 				return todos
 					.filter((todo) => filter(activeFilter, todo))
-					.map((todo) => d(fromRegistry('src/widgets/createTodoItem'), {
+					.map((todo) => d(fromRegistry('./createTodoItem'), {
 						id: todo.id,
 						state: todo
 					}));
