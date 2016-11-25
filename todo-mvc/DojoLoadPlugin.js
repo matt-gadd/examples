@@ -5,7 +5,7 @@ const DojoLoadPlugin = function (options) {
 };
 
 function stripPath(basePath, path) {
-	return path.replace(basePath + '/', '').replace(/\..*$/, '');
+	return path.replace(basePath + '/', '').replace(/\..*$/, '').replace('node_modules/', '');
 }
 
 DojoLoadPlugin.prototype.apply = function(compiler) {
@@ -27,7 +27,7 @@ DojoLoadPlugin.prototype.apply = function(compiler) {
 
 		compilation.moduleTemplate.plugin('module', (source, module) => {
 			if (module.meta && module.meta.isPotentialLoad) {
-				const path = stripPath(basePath, module.userRequest).replace('node_modules/', '');
+				const path = stripPath(basePath, module.userRequest);
 				const require = `var require = function() { return '${path}'; };`;
 				return new ConcatSource(require, '\n', source);
 			}
