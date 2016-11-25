@@ -16,14 +16,14 @@ GlobalModuleRegistryPlugin.prototype.apply = function(compiler) {
 	const bundleLoader = /bundle.*\!/;
 
 	compiler.parser.plugin("expression require", function (expr) {
-		this.state.current.meta.hasDynamicRequire = true;
+		this.state.current.meta.isPotentialLoad = true;
 		return true;
 	});
 
 	compiler.plugin('compilation', function(compilation, params) {
 
 		compilation.moduleTemplate.plugin('module', (source, module) => {
-			if (module.meta && module.meta.hasDynamicRequire) {
+			if (module.meta && module.meta.isPotentialLoad) {
 				const path = stripPath(basePath, module.userRequest);
 				const require = `var require = function() { return '${path}'; };`;
 				return new ConcatSource(require, '\n', source);
