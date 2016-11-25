@@ -1,6 +1,25 @@
 var shimPromise = require('dojo-shim/Promise');
 var Promise = shimPromise.default;
 
+function resolveRelative(base, mid) {
+	var isRelative = mid.match(/\.\//);
+	var result = base;
+	if (isRelative) {
+		if (mid.match(/^\.\//)) {
+			mid = mid.replace(/\.\//, '');
+		}
+		var up = mid.match(/^(\.\.\/)/);
+		if (up) {
+			var chunks = base.split('/');
+			chunks.splice(chunks.length - (up.length - 1));
+			result = chunks.join('/');
+			mid = mid.replace(/\.\.\//g, '');
+		}
+		mid = result + '/' + mid;
+	}
+	return mid;
+}
+
 module.exports = {
 	default: function () {
 		var req = __webpack_require__;
@@ -10,27 +29,12 @@ module.exports = {
 		base.pop();
 		base = base.join('/');
 
+		var modules = __modules__ || {};
+
 		var moduleMetas = [].slice.call(arguments)
 			.filter((mid) => typeof mid === 'string')
-			.map((mid) => {
-				var isRelative = mid.match(/\.\//);
-				var result = base;
-				if (isRelative) {
-					if (mid.match(/^\.\//)) {
-						mid = mid.replace(/\.\//, '');
-					}
-					var up = mid.match(/^(\.\.\/)/);
-					if (up) {
-						var chunks = base.split('/');
-						chunks.splice(chunks.length - (up.length - 1));
-						result = chunks.join('/');
-						mid = mid.replace(/\.\.\//g, '');
-					}
-					mid = result + '/' + mid;
-				}
-				return mid;
-			})
-			.map((mid) => __modules__[mid])
+			.map((mid) => resolveRelative(base, mid))
+			.map((mid) => modules[mid])
 			.map((moduleMeta) => {
 				if (moduleMeta.lazy) {
 					return new Promise((resolve) =>req(moduleMeta.id)(resolve));
