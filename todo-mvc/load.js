@@ -20,18 +20,21 @@ function resolveRelative(base, mid) {
 	return mid;
 }
 
+function getBasePath(context) {
+	var base = context().split('/');
+	base.pop();
+	return base.join('/');
+}
+
 module.exports = {
 	default: function () {
 		var req = __webpack_require__;
 		var context = typeof arguments[0] === 'function' ? arguments[0] : function () { return '' };
 
-		var base = context().split('/');
-		base.pop();
-		base = base.join('/');
-
 		var modules = __modules__ || {};
+		var base = getBasePath(context);
 
-		var moduleMetas = [].slice.call(arguments)
+		var results = [].slice.call(arguments)
 			.filter((mid) => typeof mid === 'string')
 			.map((mid) => resolveRelative(base, mid))
 			.map((mid) => modules[mid])
@@ -43,6 +46,6 @@ module.exports = {
 				}
 			});
 
-		return Promise.all(moduleMetas);
+		return Promise.all(results);
 	}
 }
