@@ -50,7 +50,7 @@ module.exports = {
 		]),
 		new webpack.optimize.DedupePlugin(),
 		/*new webpack.optimize.UglifyJsPlugin({ compress: { warnings: false }}),*/
-		new DojoLoadPlugin({ basePath }),
+		new DojoLoadPlugin(),
 		new HtmlWebpackPlugin ({
 			inject: true,
 			chunks: [ 'src/main' ],

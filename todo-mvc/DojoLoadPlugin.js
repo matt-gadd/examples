@@ -10,7 +10,7 @@ function stripPath(basePath, path) {
 GlobalModuleRegistryPlugin.prototype.apply = function(compiler) {
 
 	const idMap = {};
-	const basePath = this.options.basePath;
+	const basePath = compiler.options.resolve.root;
 	const relative = /^\.(\.*)\//;
 	const nodeModules = /\/node_modules\//;
 	const bundleLoader = /bundle.*\!/;
