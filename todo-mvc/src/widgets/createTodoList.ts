@@ -3,6 +3,8 @@ import { Widget, WidgetOptions, WidgetState, DNode } from 'dojo-interfaces/widge
 import d from 'dojo-widgets/util/d';
 import { TodoItemState } from './createTodoItem';
 import load from 'dojo-core/load';
+import { Require } from 'dojo-interfaces/loader';
+declare const require: Require;
 
 // would be automatically inject from wherever in a build, just like other webpack plugins/loaders
 require('bundle?lazy!./createTodoItem');
@@ -41,10 +43,9 @@ const fromRegistry = function(path: string) {
 	return createWidgetBase
 	.mixin({
 		initialize(instance: any, options: any) {
-			load(<any> require, path, 'src/lazy').then(([ a, b ]) => {
+			load(require, path).then(([ a ]) => {
 				const widget = a.default || a;
 				instance.setState({ loaded: true, widget, options });
-				console.log(b.default);
 			});
 		}
 	})
