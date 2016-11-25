@@ -1,6 +1,6 @@
 const ConcatSource = require('webpack-core/lib/ConcatSource');
 const NormalModuleReplacementPlugin = require('webpack').NormalModuleReplacementPlugin;
-const GlobalModuleRegistryPlugin = function (options) {
+const DojoLoadPlugin = function (options) {
 	this.options = options || {};
 };
 
@@ -8,7 +8,7 @@ function stripPath(basePath, path) {
 	return path.replace(basePath + '/', '').replace(/\..*$/, '');
 }
 
-GlobalModuleRegistryPlugin.prototype.apply = function(compiler) {
+DojoLoadPlugin.prototype.apply = function(compiler) {
 
 	const idMap = {};
 	const basePath = compiler.options.resolve.root[0];
@@ -64,5 +64,5 @@ GlobalModuleRegistryPlugin.prototype.apply = function(compiler) {
 	});
 };
 
-module.exports = GlobalModuleRegistryPlugin;
+module.exports = DojoLoadPlugin;
 
