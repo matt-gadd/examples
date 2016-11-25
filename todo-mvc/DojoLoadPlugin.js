@@ -1,4 +1,5 @@
-const ConcatSource = require("webpack-core/lib/ConcatSource");
+const ConcatSource = require('webpack-core/lib/ConcatSource');
+const NormalModuleReplacementPlugin = require('webpack').NormalModuleReplacementPlugin;
 const GlobalModuleRegistryPlugin = function (options) {
 	this.options = options || {};
 };
@@ -10,10 +11,12 @@ function stripPath(basePath, path) {
 GlobalModuleRegistryPlugin.prototype.apply = function(compiler) {
 
 	const idMap = {};
-	const basePath = compiler.options.resolve.root;
+	const basePath = compiler.options.resolve.root[0];
 	const relative = /^\.(\.*)\//;
 	const nodeModules = /\/node_modules\//;
 	const bundleLoader = /bundle.*\!/;
+
+	compiler.apply(new NormalModuleReplacementPlugin(/dojo-core\/load\.js/, basePath + '/load.js'));
 
 	compiler.parser.plugin("expression require", function (expr) {
 		this.state.current.meta.isPotentialLoad = true;

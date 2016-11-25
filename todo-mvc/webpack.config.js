@@ -19,8 +19,7 @@ module.exports = {
 		root: [ basePath ],
 		extensions: ['', '.ts', '.tsx', '.js'],
 		alias: {
-			rxjs: '@reactivex/rxjs/dist/amd',
-			'dojo-core/load': 'load'
+			rxjs: '@reactivex/rxjs/dist/amd'
 		}
 	},
 	resolveLoader: {
