@@ -11,6 +11,7 @@ import createTodoFooter from './widgets/createTodoFooter';
 import createTodoList from './widgets/createTodoList';
 import { Widget, WidgetState } from 'dojo-interfaces/widgetBases';
 import { VNodeProperties } from 'dojo-interfaces/vdom';
+import 'dojo-core/request/xhr';
 /*import load from 'dojo-core/load';
 
 // a build plugin would inject this

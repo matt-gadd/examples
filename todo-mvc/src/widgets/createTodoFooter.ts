@@ -4,7 +4,7 @@ import d from 'dojo-widgets/util/d';
 import { clearCompleted } from '../actions/userActions';
 import createTodoFilter from './createTodoFilter';
 import createButton from 'dojo-widgets/createButton';
-import load from 'dojo-core/load';
+import request from 'dojo-core/request';
 // a build plugin would inject this (it can actually be injected anywhere)
 require('bundle?lazy!../lazy');
 
@@ -37,16 +37,14 @@ const createTodoFooter = createWidgetBase
 						}
 					}),
 					d(createButton, {
-						id: 'lazy-load',
+						id: 'rest-request',
 						listeners: {
 							click: () => {
-								load('src/lazy').then(([ result ]) => {
-									console.log(result.default);
-								});
+								request.get('main.css').then((response: any) => console.log(response));
 							}
 						},
 						state: {
-							label: 'Lazy Load',
+							label: 'Make Request',
 							classes: [ 'clear-completed' ]
 						}
 					}),

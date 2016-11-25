@@ -27,7 +27,7 @@ DojoLoadPlugin.prototype.apply = function(compiler) {
 
 		compilation.moduleTemplate.plugin('module', (source, module) => {
 			if (module.meta && module.meta.isPotentialLoad) {
-				const path = stripPath(basePath, module.userRequest);
+				const path = stripPath(basePath, module.userRequest).replace('node_modules/', '');
 				const require = `var require = function() { return '${path}'; };`;
 				return new ConcatSource(require, '\n', source);
 			}
