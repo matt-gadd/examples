@@ -1,5 +1,6 @@
 import { find } from '@dojo/shim/array';
 import { Container } from '@dojo/widget-core/Container';
+import uuid from '@dojo/core/uuid';
 import { TodoApp } from './../widgets/TodoApp';
 import { Store } from './../store/store';
 import { State as Todo } from './../resources/Todo';
@@ -14,7 +15,7 @@ function getProperties(store: Store<any>, properties: any) {
 	function addTodo(label: string) {
 		label = label.trim();
 		if (label) {
-			const todo = { label, editing: false, completed: false, timeCreated: Date.now() };
+			const todo = { id: uuid(), label, editing: false, completed: false, timeCreated: Date.now() };
 			store.dispatch({ type: 'TODO_ADD', payload: todo });
 		}
 	}
@@ -37,7 +38,7 @@ function getProperties(store: Store<any>, properties: any) {
 
 	function toggleTodo(id: string) {
 		const todo = find(state.todos, byId(id));
-		const completed = todo ? todo.completed : false;
+		const completed = todo ? !todo.completed : false;
 		store.dispatch({ type: 'TODO_UPDATE', payload: { ...todo, completed }});
 	}
 
@@ -53,7 +54,7 @@ function getProperties(store: Store<any>, properties: any) {
 
 	function retryTodo(id: string) {
 		const todo = find(state.todos, byId(id));
-		store.dispatch({ type: 'TODO_UPDATE', payload: { ...todo, failed: false } });
+		store.dispatch({ type: 'TODO_RETRY', payload: { ...todo, failed: false } });
 	}
 
 	return {

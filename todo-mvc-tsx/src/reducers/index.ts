@@ -11,6 +11,7 @@ export function todoReducer(state: any = {}, { type, payload }: Action): any {
 				payload
 			];
 			return state;
+		case 'TODO_RETRY':
 		case 'TODO_UPDATE':
 			state.todos = state.todos.map((todo: any) => {
 				if (todo.id === payload.id) {

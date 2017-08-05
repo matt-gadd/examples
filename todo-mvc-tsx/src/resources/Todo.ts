@@ -51,7 +51,7 @@ export const postTodo = new Strategy<Resource, State>({
 	from: fromTodo,
 	transport: post(todoRestConfig),
 	actions: {
-		triggers: [ 'TODO_ADD' ],
+		triggers: [ 'TODO_ADD', 'TODO_RETRY' ],
 		onSuccess: [ 'PROCESS_TODO' ],
 		onFailure: [ 'TODO_UPDATE_FAILED' ]
 	}
