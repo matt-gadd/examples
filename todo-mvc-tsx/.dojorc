@@ -1,0 +1,8 @@
+{
+  "build-webpack": {
+    "ejected": true
+  },
+  "test-intern": {
+    "ejected": true
+  }
+}

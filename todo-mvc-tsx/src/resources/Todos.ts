@@ -19,7 +19,7 @@ function fromTodos(resource: Resource): State {
 
 export const todosRestConfig: RestTransportConfig = {
 	api: (state: State, method: string) => {
-		return 'http://localhost:5000/todos';
+		return `/todos`;
 	}
 };
 

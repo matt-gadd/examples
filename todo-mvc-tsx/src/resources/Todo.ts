@@ -27,9 +27,9 @@ export const todoRestConfig: RestTransportConfig = {
 		switch (method) {
 			case 'put':
 			case 'delete':
-				return `http://localhost:5000/todo/${state.id}`;
+				return `/todo/${state.id}`;
 			default:
-				return 'http://localhost:5000/todo';
+				return '/todo';
 		}
 	}
 };
