@@ -51,7 +51,7 @@ export const postTodo = new Strategy<Resource, State>({
 	from: fromTodo,
 	transport: post(todoRestConfig),
 	actions: {
-		triggers: [ 'ADD_TODO', 'REPLACE_TODO' ],
+		triggers: [ 'TODO_ADD' ],
 		onSuccess: [ 'PROCESS_TODO' ],
 		onFailure: [ 'TODO_UPDATE_FAILED' ]
 	}
@@ -63,7 +63,7 @@ export const deleteTodo = new Strategy<Resource, State>({
 	transport: del(todoRestConfig),
 	optimistic: true,
 	actions: {
-		triggers: [ 'DELETE_TODO' ]
+		triggers: [ 'TODO_DELETE' ]
 	}
 });
 
@@ -72,7 +72,7 @@ export const putTodo = new Strategy<Resource, State>({
 	from: fromTodo,
 	transport: put(todoRestConfig),
 	actions: {
-		triggers: [ 'SAVE_TODO' ],
+		triggers: [ 'TODO_UPDATE' ],
 		onSuccess: [ 'PROCESS_TODO' ],
 		onFailure: [ 'TODO_UPDATE_FAILED' ]
 	}

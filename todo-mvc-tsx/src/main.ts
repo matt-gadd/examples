@@ -17,23 +17,9 @@ const defaultState = {
 };
 
 const store = createStore();
-
-store.afterAction('ADD_TODO', [ 'CLEAR_TODO_INPUT', 'CALCULATE_COUNTS' ]);
-store.afterAction('REPLACE_TODO', [ 'CALCULATE_COUNTS' ]);
-store.afterAction('FETCH_TODOS', [ 'CALCULATE_COUNTS' ]);
-store.afterAction('DELETE_TODO', [ 'CALCULATE_COUNTS' ]);
-store.afterAction('CLEAR_COMPLETED', [ 'CALCULATE_COUNTS' ]);
-store.afterAction('SAVE_TODO', [ 'CALCULATE_COUNTS' ]);
-store.afterAction('UPDATE_TODO', [ 'CALCULATE_COUNTS' ]);
-store.afterAction('REPLACE_TODO', [ 'CALCULATE_COUNTS' ]);
-store.afterAction('PROCESS_TODO', [ 'CALCULATE_COUNTS' ]);
-
-store.add(getTodos);
-store.add(postTodo);
-store.add(deleteTodo);
-store.add(putTodo);
-
+store.add([ getTodos, postTodo, deleteTodo, putTodo ]);
 store.registerReducers(todoReducer);
+
 registry.define('application-state', Injector(BaseInjector, store));
 
 const config = [

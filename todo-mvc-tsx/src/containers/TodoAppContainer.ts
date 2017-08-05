@@ -1,30 +1,21 @@
 import { find } from '@dojo/shim/array';
-import uuid from '@dojo/core/uuid';
 import { Container } from '@dojo/widget-core/Container';
 import { TodoApp } from './../widgets/TodoApp';
 import { Store } from './../store/store';
 import { State as Todo } from './../resources/Todo';
 
 function byId(id: string) {
-	return (todo: Todo) => {
-		return id === todo.id;
-	};
+	return (todo: Todo) => id === todo.id;
 }
 
 function getProperties(store: Store<any>, properties: any) {
 	const state = store.getState();
 
-	function addTodo(todo: string) {
-		if (todo.trim()) {
-			store.dispatch({
-				type: 'ADD_TODO',
-				payload: {
-					id: uuid(),
-					label: todo.trim(),
-					completed: false,
-					timeCreated: Date.now()
-				}
-			});
+	function addTodo(label: string) {
+		label = label.trim();
+		if (label) {
+			const todo = { label, editing: false, completed: false, timeCreated: Date.now() };
+			store.dispatch({ type: 'TODO_ADD', payload: todo });
 		}
 	}
 
@@ -33,43 +24,36 @@ function getProperties(store: Store<any>, properties: any) {
 	}
 
 	function removeTodo(id: string) {
-		store.dispatch({ type: 'DELETE_TODO', payload: { id }});
+		store.dispatch({ type: 'TODO_DELETE', payload: { id }});
+	}
+
+	function clearCompleted() {
+		store.dispatch({ type: 'TODOS_CLEAR_COMPLETED' });
+	}
+
+	function toggleTodos() {
+		store.dispatch({ type: 'TODOS_TOGGLE_COMPLETED' });
 	}
 
 	function toggleTodo(id: string) {
 		const todo = find(state.todos, byId(id));
-		if (todo) {
-			store.dispatch({ type: 'SAVE_TODO', payload: { ...todo, completed: !todo.completed, editing: false }});
-		}
-	}
-
-	function clearCompleted() {
-		store.dispatch({ type: 'CLEAR_COMPLETED' });
-	}
-
-	function toggleTodos() {
-		store.dispatch({ type: 'TOGGLE_TODOS' });
+		const completed = todo ? todo.completed : false;
+		store.dispatch({ type: 'TODO_UPDATE', payload: { ...todo, completed }});
 	}
 
 	function editTodo(id: string) {
-		store.dispatch({ type: 'EDIT_TODO', payload: { id }});
+		const todo = find(state.todos, byId(id));
+		store.dispatch({ type: 'TODO_UPDATE', payload: { ...todo, editing: true }});
 	}
 
 	function saveTodo(id: string, label?: string) {
 		const todo = find(state.todos, byId(id));
-		if (todo && label) {
-			store.dispatch({ type: 'SAVE_TODO', payload: { ...todo, label, editing: false }});
-		}
-		else if (todo) {
-			store.dispatch({ type: 'UPDATE_TODO', payload: { ...todo, editing: false }});
-		}
+		store.dispatch({ type: 'TODO_UPDATE', payload: { ...todo, label, editing: false }});
 	}
 
 	function retryTodo(id: string) {
-		const todo = state.todos.filter((todo: any) => {
-			return todo.id === id;
-		});
-		store.dispatch({ type: 'REPLACE_TODO', payload: { ...todo[0], failed: false } });
+		const todo = find(state.todos, byId(id));
+		store.dispatch({ type: 'TODO_UPDATE', payload: { ...todo, failed: false } });
 	}
 
 	return {

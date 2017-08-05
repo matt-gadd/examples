@@ -5,16 +5,22 @@ export function todoReducer(state: any = {}, { type, payload }: Action): any {
 		case 'TODO_INPUT':
 			state.currentTodo = payload.currentTodo;
 			return state;
-		case 'ADD_TODO':
+		case 'TODO_ADD':
 			state.todos = [
 				...state.todos,
-				{
-					id: payload.id,
-					label: payload.label,
-					completed: payload.completed,
-					timeCreated: payload.timeCreated
-				}
+				payload
 			];
+			return state;
+		case 'TODO_UPDATE':
+			state.todos = state.todos.map((todo: any) => {
+				if (todo.id === payload.id) {
+					return payload;
+				}
+				return todo;
+			});
+			return state;
+		case 'TODO_DELETE':
+			state.todos = state.todos.filter((todo: any) => todo.id !== payload.id);
 			return state;
 		case 'TODO_UPDATE_FAILED':
 			state.todos = state.todos.map((todo: any) => {
@@ -32,57 +38,19 @@ export function todoReducer(state: any = {}, { type, payload }: Action): any {
 				return todo;
 			});
 			return state;
-		case 'FETCH_TODOS':
+		case 'TODOS_ADD':
 			return {
 				...state,
 				todos: payload.data
 			};
-		case 'CALCULATE_COUNTS':
-			const completedTodos = state.todos.filter((todo: any) => todo.completed);
-			return {
-				...state,
-				completedCount: completedTodos.length,
-				activeCount: state.todos.length - completedTodos.length
-			};
-		case 'CLEAR_TODO_INPUT':
-			state.currentTodo = '';
-			return state;
-		case 'DELETE_TODO':
-			state.todos = state.todos.filter((todo: any) => todo.id !== payload.id);
-			return state;
-		case 'TOGGLE_TODOS':
+		case 'TODOS_TOGGLE_COMPLETED':
 			state.todos = state.todos.map((todo: any) => {
 				return { ...todo, completed: state.activeCount !== 0 };
 			});
 			return state;
-		case 'CLEAR_COMPLETED':
+		case 'TODOS_CLEAR_COMPLETED':
 			state.todos = state.todos.filter((todo: any) => {
 				return !todo.completed;
-			});
-			return state;
-		case 'EDIT_TODO':
-			state.todos = state.todos.map((todo: any) => {
-				if (todo.id === payload.id) {
-					return { ...todo, editing: true};
-				}
-				return todo;
-			});
-			return state;
-		case 'REPLACE_TODO':
-			state.todos = state.todos.map((todo: any) => {
-				if (todo.id === payload.id) {
-					return payload;
-				}
-				return todo;
-			});
-			return state;
-		case 'UPDATE_TODO':
-		case 'SAVE_TODO':
-			state.todos = state.todos.map((todo: any) => {
-				if (todo.id === payload.id) {
-					return payload;
-				}
-				return todo;
 			});
 			return state;
 		default:

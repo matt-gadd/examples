@@ -68,7 +68,12 @@ export class Store<S = any> extends Evented {
 		return this._state;
 	}
 
-	public add(strategy: Strategy) {
+	public add(strategies: Strategy | Strategy[]) {
+		strategies = Array.isArray(strategies) ? strategies : [ strategies ];
+		strategies.forEach((strategy) => this._add(strategy));
+	}
+
+	private _add(strategy: Strategy) {
 		if (strategy.optimistic) {
 			strategy.triggerActions.forEach((actionType) => {
 				const beforeStrategies = this._beforeStrategyMap.get(actionType);

@@ -29,6 +29,6 @@ export const getTodos = new Strategy<TodoResource[], TodoState[]>({
 	transport: get(todosRestConfig),
 	actions: {
 		triggers: [ 'INITIAL' ],
-		onSuccess: [ 'FETCH_TODOS' ]
+		onSuccess: [ 'TODOS_ADD' ]
 	}
 });
