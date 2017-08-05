@@ -5,6 +5,7 @@ export interface Resource {
 	uuid: string;
 	label: string;
 	completed: boolean;
+	timeCreated: number;
 }
 
 export interface State {
@@ -12,14 +13,25 @@ export interface State {
 	label: string;
 	completed: boolean;
 	editing?: boolean;
+	timeCreated: number;
 }
 
 export function toTodo(state: State): Resource {
-	return { uuid: state.id, label: state.label, completed: state.completed };
+	return {
+		uuid: state.id,
+		label: state.label,
+		completed: state.completed,
+		timeCreated: state.timeCreated
+	};
 }
 
 export function fromTodo(resource: Resource): State {
-	return { id: resource.uuid, label: resource.label, completed: resource.completed };
+	return {
+		id: resource.uuid,
+		label: resource.label,
+		completed: resource.completed,
+		timeCreated: resource.timeCreated
+	};
 }
 
 export const todoRestConfig: RestTransportConfig = {

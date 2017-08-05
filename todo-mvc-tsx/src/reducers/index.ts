@@ -8,7 +8,12 @@ export function todoReducer(state: any = {}, { type, payload }: Action): any {
 		case 'ADD_TODO':
 			state.todos = [
 				...state.todos,
-				{ id: payload.id, label: payload.label, completed: payload.completed }
+				{
+					id: payload.id,
+					label: payload.label,
+					completed: payload.completed,
+					timeCreated: payload.timeCreated
+				}
 			];
 			return state;
 		case 'TODO_UPDATE_FAILED':

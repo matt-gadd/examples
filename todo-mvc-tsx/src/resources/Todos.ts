@@ -12,8 +12,8 @@ function toTodos(state: State): Resource {
 }
 
 function fromTodos(resource: Resource): State {
-	return resource.map(({ uuid: id, label, completed }) => {
-		return { id, label, completed };
+	return resource.map(({ uuid: id, label, completed, timeCreated }) => {
+		return { id, label, completed, timeCreated };
 	});
 }
 

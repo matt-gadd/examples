@@ -1,4 +1,4 @@
-import { createServer } from 'service-mocker/server';
+import { createServer, MockerRequest, MockerResponse, RouteCallback } from 'service-mocker/server';
 
 const { router } = createServer();
 
@@ -8,19 +8,27 @@ let todos = [
 	{
 		uuid: `${id++}`,
 		label: 'hello world',
-		completed: false
+		completed: false,
+		timeCreated: Date.now()
 	}
 ];
 
+function failOccasionally(callback: RouteCallback) {
+	return (req: MockerRequest, res: MockerResponse) => {
+		const fail = !!Math.round(Math.random());
+		fail ? res.sendStatus(500) : callback(req, res);
+	};
+}
+
 router.get('/todos', (req, res) => {
-	res.json(todos);
+	res.json(todos.sort((a, b) => a.timeCreated - b.timeCreated));
 });
 
-router.delete('/todo/:id', (req, res) => {
+router.delete('/todo/:id', failOccasionally((req, res) => {
 	const id = req.params.id;
 	todos = todos.filter((todo) => todo.uuid !== id);
 	res.sendStatus(200);
-});
+}));
 
 router.put('/todo/:id', (req, res) => {
 	req.json().then((json) => {
@@ -34,10 +42,13 @@ router.put('/todo/:id', (req, res) => {
 	});
 });
 
-router.post('/todo', (req, res) => {
+router.post('/todo', failOccasionally((req, res) => {
 	req.json().then((json) => {
-		const todo = { ...json, uuid: `${id++}` };
+		const todo = {
+			...json,
+			uuid: `${id++}`
+		};
 		todos.push(todo);
 		res.json(todo);
 	});
-});
+}));

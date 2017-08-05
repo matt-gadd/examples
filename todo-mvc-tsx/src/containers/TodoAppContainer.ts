@@ -18,7 +18,12 @@ function getProperties(store: Store<any>, properties: any) {
 		if (todo.trim()) {
 			store.dispatch({
 				type: 'ADD_TODO',
-				payload: { id: uuid(), label: todo.trim(), completed: false }
+				payload: {
+					id: uuid(),
+					label: todo.trim(),
+					completed: false,
+					timeCreated: Date.now()
+				}
 			});
 		}
 	}
