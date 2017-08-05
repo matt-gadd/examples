@@ -8,6 +8,24 @@
 	border-bottom: none;
 }
 
+.failed {
+	background: pink;
+}
+
+.retry {
+	position: absolute;
+	top: 0;
+	right: 40px;
+	bottom: 0;
+	width: 40px;
+	height: 35px;
+	margin: auto 0;
+	font-size: 20px;
+	color: #cc9a9a;
+	margin-bottom: 11px;
+	transition: color 0.2s ease-out;
+}
+
 .edit {
 	position: relative;
 	margin: 0;
@@ -104,6 +122,10 @@
 
 .destroy:after {
 	content: '×';
+}
+
+.retry:after {
+	content: '⟳';
 }
 
 .todoItem:hover .destroy {

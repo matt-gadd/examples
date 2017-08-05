@@ -1,13 +1,26 @@
+import { find } from '@dojo/shim/array';
 import uuid from '@dojo/core/uuid';
 import { Container } from '@dojo/widget-core/Container';
 import { TodoApp } from './../widgets/TodoApp';
 import { Store } from './../store/store';
+import { State as Todo } from './../resources/Todo';
+
+function byId(id: string) {
+	return (todo: Todo) => {
+		return id === todo.id;
+	};
+}
 
 function getProperties(store: Store<any>, properties: any) {
 	const state = store.getState();
 
-	function addTodo() {
-		store.dispatch({ type: 'ADD_TODO', payload: { id: uuid() }});
+	function addTodo(todo: string) {
+		if (todo.trim()) {
+			store.dispatch({
+				type: 'ADD_TODO',
+				payload: { id: uuid(), label: todo.trim(), completed: false }
+			});
+		}
 	}
 
 	function todoInput(currentTodo: string) {
@@ -19,7 +32,10 @@ function getProperties(store: Store<any>, properties: any) {
 	}
 
 	function toggleTodo(id: string) {
-		store.dispatch({ type: 'TOGGLE_TODO', payload: { id }});
+		const todo = find(state.todos, byId(id));
+		if (todo) {
+			store.dispatch({ type: 'SAVE_TODO', payload: { ...todo, completed: !todo.completed, editing: false }});
+		}
 	}
 
 	function clearCompleted() {
@@ -34,8 +50,21 @@ function getProperties(store: Store<any>, properties: any) {
 		store.dispatch({ type: 'EDIT_TODO', payload: { id }});
 	}
 
-	function saveTodo(id: string, label: string) {
-		store.dispatch({ type: 'SAVE_TODO', payload: { id, label }});
+	function saveTodo(id: string, label?: string) {
+		const todo = find(state.todos, byId(id));
+		if (todo && label) {
+			store.dispatch({ type: 'SAVE_TODO', payload: { ...todo, label, editing: false }});
+		}
+		else if (todo) {
+			store.dispatch({ type: 'UPDATE_TODO', payload: { ...todo, editing: false }});
+		}
+	}
+
+	function retryTodo(id: string) {
+		const todo = state.todos.filter((todo: any) => {
+			return todo.id === id;
+		});
+		store.dispatch({ type: 'REPLACE_TODO', payload: { ...todo[0], failed: false } });
 	}
 
 	return {
@@ -47,6 +76,7 @@ function getProperties(store: Store<any>, properties: any) {
 		clearCompleted,
 		editTodo,
 		saveTodo,
+		retryTodo,
 		currentTodo: state.currentTodo,
 		completedCount: state.completedCount,
 		activeCount: state.activeCount,

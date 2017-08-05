@@ -6,3 +6,5 @@ export const toggle: string;
 export const todoLabel: string;
 export const completed: string;
 export const destroy: string;
+export const failed: string;
+export const retry: string;

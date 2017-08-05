@@ -10,7 +10,7 @@ export interface TodoHeaderProperties extends WidgetProperties {
 	todo: string;
 	todoCount: number;
 	toggleTodos: () => void;
-	addTodo: () => void;
+	addTodo: (label: string) => void;
 	todoInput: (todo: string) => void;
 }
 
@@ -23,9 +23,9 @@ export class TodoHeader extends TodoHeaderBase<TodoHeaderProperties> {
 		this.properties.toggleTodos();
 	}
 
-	private _addTodo(event: KeyboardEvent): void {
-		if (event.which === 13) {
-			this.properties.addTodo();
+	private _addTodo({ which, target: { value: label } }: any): void {
+		if (which === 13) {
+			this.properties.addTodo(label);
 		}
 	}
 

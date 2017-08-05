@@ -6,6 +6,8 @@ import { registerRouterInjector } from '@dojo/routing/RouterInjector';
 import { TodoAppContainer } from './containers/TodoAppContainer';
 import createStore from './store/store';
 import { todoReducer } from './reducers';
+import { getTodos } from './resources/Todos';
+import { deleteTodo, postTodo, putTodo } from './resources/Todo';
 
 const defaultState = {
 	todos: [],
@@ -14,7 +16,23 @@ const defaultState = {
 	completedCount: 0
 };
 
-const store = createStore(defaultState);
+const store = createStore();
+
+store.afterAction('ADD_TODO', [ 'CLEAR_TODO_INPUT', 'CALCULATE_COUNTS' ]);
+store.afterAction('REPLACE_TODO', [ 'CALCULATE_COUNTS' ]);
+store.afterAction('FETCH_TODOS', [ 'CALCULATE_COUNTS' ]);
+store.afterAction('DELETE_TODO', [ 'CALCULATE_COUNTS' ]);
+store.afterAction('CLEAR_COMPLETED', [ 'CALCULATE_COUNTS' ]);
+store.afterAction('SAVE_TODO', [ 'CALCULATE_COUNTS' ]);
+store.afterAction('UPDATE_TODO', [ 'CALCULATE_COUNTS' ]);
+store.afterAction('REPLACE_TODO', [ 'CALCULATE_COUNTS' ]);
+store.afterAction('PROCESS_TODO', [ 'CALCULATE_COUNTS' ]);
+
+store.add(getTodos);
+store.add(postTodo);
+store.add(deleteTodo);
+store.add(putTodo);
+
 store.registerReducers(todoReducer);
 registry.define('application-state', Injector(BaseInjector, store));
 
@@ -29,6 +47,7 @@ const config = [
 	}
 ];
 
+store.start(defaultState);
 const router = registerRouterInjector(config);
 const Projector = ProjectorMixin(TodoAppContainer);
 const projector = new Projector();

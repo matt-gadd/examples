@@ -14,6 +14,7 @@ export interface Todo {
 	label: string;
 	completed: boolean;
 	editing?: boolean;
+	failed: boolean;
 }
 
 export interface TodoAppProperties extends WidgetProperties {
@@ -21,14 +22,15 @@ export interface TodoAppProperties extends WidgetProperties {
 	currentTodo: string;
 	activeCount: number;
 	completedCount: number;
-	addTodo: () => void;
+	addTodo: (label: string) => void;
 	editTodo: (id: string) => void;
-	saveTodo: (id: string, label: string) => void;
+	saveTodo: (id: string, label?: string) => void;
 	todoInput: (id: string) => void;
 	removeTodo: (id: string) => void;
 	toggleTodo: (id: string) => void;
 	toggleTodos: () => void;
 	clearCompleted: () => void;
+	retryTodo: (id: string) => void;
 }
 
 export const TodoAppBase = ThemeableMixin(WidgetBase);
@@ -37,7 +39,7 @@ export const TodoAppBase = ThemeableMixin(WidgetBase);
 export class TodoApp extends TodoAppBase<TodoAppProperties> {
 
 	protected render(): DNode {
-		const { activeCount, todos, currentTodo, completedCount, addTodo, editTodo, todoInput, removeTodo, toggleTodo, toggleTodos, clearCompleted, saveTodo } = this.properties;
+		const { activeCount, todos, currentTodo, retryTodo, completedCount, addTodo, editTodo, todoInput, removeTodo, toggleTodo, toggleTodos, clearCompleted, saveTodo } = this.properties;
 		const todoCount = todos.length;
 
 		return (
@@ -57,6 +59,7 @@ export class TodoApp extends TodoAppBase<TodoAppProperties> {
 						removeTodo={removeTodo}
 						toggleTodo={toggleTodo}
 						saveTodo={saveTodo}
+						retryTodo={retryTodo}
 					/>
 				</section>
 				{ todoCount ? (

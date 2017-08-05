@@ -11,7 +11,8 @@ export interface TodoItemProperties extends WidgetProperties {
 	toggleTodo: (id: string) => void;
 	removeTodo: (id: string) => void;
 	editTodo: (id: string) => void;
-	saveTodo: (id: string, label: string) => void;
+	saveTodo: (id: string, label?: string) => void;
+	retryTodo: (id: string) => void;
 }
 
 export const TodoItemBase = ThemeableMixin(WidgetBase);
@@ -31,21 +32,24 @@ export class TodoItem extends TodoItemBase<TodoItemProperties> {
 		this.properties.removeTodo(this.properties.todo.id);
 	}
 
-	private _saveTodo({ which, target: { value: label } }: any) {
+	private _retryTodo() {
+		this.properties.retryTodo(this.properties.todo.id);
+	}
+
+	private _updateTodo({ which, target: { value: label } }: any) {
 		const { todo } = this.properties;
 
-		if (which === 13 || which === 27) {
-			this._saveOnLeave({ which, target: { value: label } });
+		if (which === 13 || (!which && todo.editing)) {
+			label ? this.properties.saveTodo(todo.id, label) : this._removeTodo();
+		}
+		else if (which === 27) {
+			this.properties.saveTodo(todo.id);
 		}
 	}
 
-	private _saveOnLeave({ which, target: { value: label } }: any) {
-		const { todo } = this.properties;
-		if (label.trim()) {
-				this.properties.saveTodo(todo.id, label);
-		}
-		else {
-			this._removeTodo();
+	protected onElementCreated(element: HTMLElement, key: string): void {
+		if (key === 'edit-input') {
+			setTimeout(() => element.focus(), 0);
 		}
 	}
 
@@ -54,11 +58,12 @@ export class TodoItem extends TodoItemBase<TodoItemProperties> {
 		const todoItemClasses = this.classes(
 			css.todoItem,
 			Boolean(todo.editing) ? css.editing : null,
-			Boolean(todo.completed && !todo.editing) ? css.completed : null
+			Boolean(todo.completed && !todo.editing) ? css.completed : null,
+			todo.failed ? css.failed : null
 		);
 
 		return (
-			<li id='todo-item' classes={todoItemClasses}>
+			<li classes={todoItemClasses}>
 				<div classes={this.classes(css.view)}>
 					<input
 						id='toggle'
@@ -72,15 +77,16 @@ export class TodoItem extends TodoItemBase<TodoItemProperties> {
 						innerHTML={todo.label}
 						ondblclick={this._editTodo}
 					/>
-					<button id='destroy' onclick={this._removeTodo} classes={this.classes(css.destroy)}/>
+					{todo.failed ? <button key='retry' onclick={this._retryTodo} classes={this.classes(css.retry)}/> : null}
+					<button key='destroy' onclick={this._removeTodo} classes={this.classes(css.destroy)}/>
 				</div>
 				{todo.editing ? (
 					<input
 						key='edit-input'
 						value={todo.label}
 						classes={this.classes(css.edit)}
-						onblur={this._saveOnLeave}
-						onkeyup={this._saveTodo}
+						onblur={this._updateTodo}
+						onkeyup={this._updateTodo}
 					/>
 				) : (null)}
 			</li>

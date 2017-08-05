@@ -1,84 +1,85 @@
 import { Action } from './../store/store';
 
 export function todoReducer(state: any = {}, { type, payload }: Action): any {
-	let { currentTodo, activeCount, completedCount } = state;
-	let todos;
 	switch (type) {
 		case 'TODO_INPUT':
-			return { ...state, currentTodo: payload.currentTodo };
-		case 'ADD_TODO':
-			if (currentTodo.trim()) {
-				activeCount++;
-				return {
-					...state,
-					currentTodo: '',
-					todos: [
-						...state.todos,
-						{ id: payload.id, label: currentTodo.trim(), completed: false }],
-					activeCount
-				};
-			}
+			state.currentTodo = payload.currentTodo;
 			return state;
-		case 'TOGGLE_TODO':
-			todos = state.todos.map((todo: any) => {
-				if (todo.id === payload.id) {
-					todo.completed ? completedCount-- && activeCount++ : activeCount-- && completedCount++;
-					return { ...todo, completed: !todo.completed};
+		case 'ADD_TODO':
+			state.todos = [
+				...state.todos,
+				{ id: payload.id, label: payload.label, completed: payload.completed }
+			];
+			return state;
+		case 'TODO_UPDATE_FAILED':
+			state.todos = state.todos.map((todo: any) => {
+				if (todo.id === payload.original.id) {
+					return { ...todo, failed: true };
 				}
 				return todo;
 			});
-			return { ...state, todos, completedCount: Math.max(completedCount, 0), activeCount: Math.max(activeCount, 0) };
-		case 'DELETE_TODO':
-			todos = state.todos.filter((todo: any) => {
-				if (todo.id === payload.id) {
-					if (todo.completed) {
-						completedCount--;
-					}
-					else {
-						activeCount--;
-					}
-					return false;
+			return state;
+		case 'PROCESS_TODO':
+			state.todos = state.todos.map((todo: any) => {
+				if (todo.id === payload.original.id) {
+					return { ...todo, ...payload.data };
 				}
-				return true;
+				return todo;
 			});
-			return { ...state, todos, completedCount, activeCount };
+			return state;
+		case 'FETCH_TODOS':
+			return {
+				...state,
+				todos: payload.data
+			};
+		case 'CALCULATE_COUNTS':
+			const completedTodos = state.todos.filter((todo: any) => todo.completed);
+			return {
+				...state,
+				completedCount: completedTodos.length,
+				activeCount: state.todos.length - completedTodos.length
+			};
+		case 'CLEAR_TODO_INPUT':
+			state.currentTodo = '';
+			return state;
+		case 'DELETE_TODO':
+			state.todos = state.todos.filter((todo: any) => todo.id !== payload.id);
+			return state;
 		case 'TOGGLE_TODOS':
-			const todosCompleted = activeCount !== 0;
-			todos = state.todos.map((todo: any) => {
-				return { ...todo, completed: todosCompleted };
+			state.todos = state.todos.map((todo: any) => {
+				return { ...todo, completed: state.activeCount !== 0 };
 			});
-			if (todosCompleted) {
-				completedCount = todos.length;
-				activeCount = 0;
-			}
-			else {
-				completedCount = 0;
-				activeCount = todos.length;
-			}
-			return { ...state, todos, completedCount, activeCount };
+			return state;
 		case 'CLEAR_COMPLETED':
-			todos = state.todos.filter((todo: any) => {
+			state.todos = state.todos.filter((todo: any) => {
 				return !todo.completed;
 			});
-			completedCount = 0;
-			activeCount = todos.length;
-			return { ...state, todos, completedCount, activeCount };
+			return state;
 		case 'EDIT_TODO':
-			todos = state.todos.map((todo: any) => {
+			state.todos = state.todos.map((todo: any) => {
 				if (todo.id === payload.id) {
 					return { ...todo, editing: true};
 				}
 				return todo;
 			});
-			return { ...state, todos };
-		case 'SAVE_TODO':
-			todos = state.todos.map((todo: any) => {
+			return state;
+		case 'REPLACE_TODO':
+			state.todos = state.todos.map((todo: any) => {
 				if (todo.id === payload.id) {
-					return { ...todo, editing: false, label: payload.label };
+					return payload;
 				}
 				return todo;
 			});
-			return { ...state, todos };
+			return state;
+		case 'UPDATE_TODO':
+		case 'SAVE_TODO':
+			state.todos = state.todos.map((todo: any) => {
+				if (todo.id === payload.id) {
+					return payload;
+				}
+				return todo;
+			});
+			return state;
 		default:
 			return state;
 	}
