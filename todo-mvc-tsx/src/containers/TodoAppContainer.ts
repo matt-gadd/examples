@@ -49,7 +49,11 @@ function getProperties(store: Store<any>, properties: any) {
 
 	function saveTodo(id: string, label?: string) {
 		const todo = find(state.todos, byId(id));
-		store.dispatch({ type: 'TODO_UPDATE', payload: { ...todo, label, editing: false }});
+		if (todo) {
+			label = label || todo.label;
+			const payload = { ...todo, editing: false };
+			store.dispatch({ type: 'TODO_UPDATE', payload: { ...todo, label, editing: false }});
+		}
 	}
 
 	function retryTodo(id: string) {
