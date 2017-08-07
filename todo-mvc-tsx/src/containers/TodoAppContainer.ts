@@ -51,7 +51,6 @@ function getProperties(store: Store<any>, properties: any) {
 		const todo = find(state.todos, byId(id));
 		if (todo) {
 			label = label || todo.label;
-			const payload = { ...todo, editing: false };
 			store.dispatch({ type: 'TODO_UPDATE', payload: { ...todo, label, editing: false }});
 		}
 	}
