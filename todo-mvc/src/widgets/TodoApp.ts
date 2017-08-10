@@ -30,7 +30,7 @@ export interface TodoAppProperties extends WidgetProperties {
 	currentTodo: string;
 	activeCount: number;
 	completedCount: number;
-	addTodo: () => void;
+	addTodo: (label: string) => void;
 	editTodo: (id: string) => void;
 	saveTodo: (id: string, label?: string) => void;
 	todoInput: (id: string) => void;
@@ -43,7 +43,7 @@ export interface TodoAppProperties extends WidgetProperties {
 export const TodoAppBase = ThemeableMixin(WidgetBase);
 
 @theme(css)
-export default class TodoApp extends TodoAppBase<TodoAppProperties> {
+export class TodoApp extends TodoAppBase<TodoAppProperties> {
 
 	protected render(): DNode {
 		const {
@@ -73,3 +73,5 @@ export default class TodoApp extends TodoAppBase<TodoAppProperties> {
 		]);
 	}
 }
+
+export default TodoApp;
