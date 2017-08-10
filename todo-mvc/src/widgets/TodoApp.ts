@@ -38,6 +38,8 @@ export interface TodoAppProperties extends WidgetProperties {
 	toggleTodo: (id: string, completed: boolean) => void;
 	toggleTodos: () => void;
 	clearCompleted: () => void;
+	undo: () => void;
+	hasUndoOperations: boolean;
 }
 
 export const TodoAppBase = ThemeableMixin(WidgetBase);
@@ -58,14 +60,16 @@ export class TodoApp extends TodoAppBase<TodoAppProperties> {
 			toggleTodo,
 			toggleTodos,
 			clearCompleted,
-			saveTodo
+			saveTodo,
+			undo,
+			hasUndoOperations
 		} = this.properties;
 
 		const todoCount = todos.length;
 		const allCompleted = todoCount > 0 && completedCount === todoCount;
 
 		return v('section', { classes: this.classes(css.todoapp) }, [
-			w<TodoHeader>('todo-header', { todo: currentTodo, todoInput, allCompleted, addTodo, toggleTodos, todoCount }),
+			w<TodoHeader>('todo-header', { todo: currentTodo, todoInput, allCompleted, addTodo, toggleTodos, todoCount, undo, hasUndoOperations }),
 			v('section', {}, [
 				w(TodoListOutlet, { todos, editTodo, removeTodo, toggleTodo, saveTodo })
 			]),

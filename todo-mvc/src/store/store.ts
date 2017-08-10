@@ -98,6 +98,10 @@ export class Store<S = any> extends Evented implements Store<S> {
 		}
 	}
 
+	public get hasUndoOperations(): boolean {
+		return this._undoStack.length > 0;
+	}
+
 	private _createProcessRunner(process: ProcessInstruction) {
 		return (...args: any[]) => {
 			this.runProcess(process.do(...args));

@@ -12,6 +12,8 @@ export interface TodoHeaderProperties extends WidgetProperties {
 	toggleTodos: () => void;
 	addTodo: (label: string) => void;
 	todoInput: (todo: string) => void;
+	undo: () => void;
+	hasUndoOperations: boolean;
 }
 
 export const TodoHeaderBase = ThemeableMixin(WidgetBase);
@@ -34,6 +36,10 @@ export class TodoHeader extends TodoHeaderBase<TodoHeaderProperties> {
 		this.properties.todoInput(value);
 	}
 
+	private _undo() {
+		this.properties.undo();
+	}
+
 	protected onElementCreated(element: HTMLElement, key: string): void {
 		if (key === 'todo-input') {
 			element.focus();
@@ -41,7 +47,7 @@ export class TodoHeader extends TodoHeaderBase<TodoHeaderProperties> {
 	}
 
 	protected render(): DNode {
-		const { properties: { todo, allCompleted } } = this;
+		const { properties: { todo, allCompleted, hasUndoOperations } } = this;
 
 		const newTodoProperties = {
 			key: 'todo-input',
@@ -55,7 +61,8 @@ export class TodoHeader extends TodoHeaderBase<TodoHeaderProperties> {
 		return v('header', [
 			v('h1', { classes: this.classes(css.title) }, [ 'todos' ]),
 			v('input', newTodoProperties),
-			v('input', { onchange: this._toggleAllTodos, checked: allCompleted, type: 'checkbox', classes: this.classes(css.toggleAll) })
+			v('input', { key: 'toggle-all', onchange: this._toggleAllTodos, checked: allCompleted, type: 'checkbox', classes: this.classes(css.toggleAll) }),
+			v('button', { key: 'undo', onclick: this._undo, disabled: !hasUndoOperations, classes: this.classes(css.undo) })
 		]);
 	}
 }

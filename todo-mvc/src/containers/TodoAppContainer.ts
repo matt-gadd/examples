@@ -27,7 +27,9 @@ function getProperties(store: Store<any>, properties: any) {
 		currentTodo: state.currentTodo,
 		completedCount: state.completedCount,
 		activeCount: state.activeCount,
-		todos: state.todos
+		todos: state.todos,
+		undo: store.undo.bind(store),
+		hasUndoOperations: store.hasUndoOperations
 	};
 }
 
