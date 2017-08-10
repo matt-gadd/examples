@@ -15,7 +15,7 @@ export interface ProcessInstruction<S = any> {
 }
 
 export interface Operation {
-	(state: any, ...args: any[]): PatchOperation | PatchOperation[];
+	(state: any, ...args: any[]): undefined | PatchOperation | PatchOperation[];
 }
 
 /**
@@ -39,6 +39,9 @@ export function process(...operations: Operation[]) {
 				const undoOperations: any[] = [];
 				const patchedDocument = operations.reduce((newState: any, operation: Operation) => {
 					const patchOperations = operation(newState, ...args);
+					if (!patchOperations) {
+						return newState;
+					}
 					const patch = new JsonPatch(patchOperations);
 					const patchedState = patch.apply(newState);
 					undoOperations.push(...patchedState.undoOperations);

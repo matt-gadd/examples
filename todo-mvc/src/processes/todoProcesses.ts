@@ -68,7 +68,9 @@ function updateTodoOperation(state: any, payload: any) {
 
 function removeTodoOperation(state: any, id: any) {
 	const index = findIndex(state.todos, byId(id));
-	return remove(`/todos/${index}`);
+	if (index !== -1) {
+		return remove(`/todos/${index}`);
+	}
 }
 
 export const addTodoProcess = process(addTodoOperation, calculateCountsOperation);
