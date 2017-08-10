@@ -24,7 +24,7 @@ export class TodoHeader extends TodoHeaderBase<TodoHeaderProperties> {
 	}
 
 	private _addTodo({ which, target: { value: label } }: any): void {
-		if (which === 13) {
+		if (which === 13 && label) {
 			this.properties.todoInput('');
 			this.properties.addTodo(label);
 		}
