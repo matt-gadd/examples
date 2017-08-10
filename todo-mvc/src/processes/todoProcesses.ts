@@ -12,8 +12,7 @@ function byCompleted(completed: boolean) {
 }
 
 function addTodoOperation(state: any, label: string) {
-	const index = state.todos.length;
-	return add(`/todos/${index}`, { id: uuid(), label, completed: false });
+	return add(`/todos/-`, { id: uuid(), label, completed: false });
 }
 
 function calculateCountsOperation(state: any) {
