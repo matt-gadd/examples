@@ -1,8 +1,7 @@
 import { find, findIndex } from '@dojo/shim/array';
 import uuid from '@dojo/core/uuid';
-import { PatchOperation, OperationType } from './../store/patch/JsonPatch';
-import { JsonPointer } from './../store/patch/JsonPointer';
 import { process } from './../store/store';
+import { add, replace, remove } from './../store/operation';
 
 function byId(id: string) {
 	return (todo: any) => id === todo.id;
@@ -12,60 +11,36 @@ function byCompleted(completed: boolean) {
 	return (todo: any) => completed === todo.completed;
 }
 
-function addTodoOperation(state: any, label: string): PatchOperation {
+function addTodoOperation(state: any, label: string) {
 	const index = state.todos.length;
-	return {
-		op: OperationType.ADD,
-		path: new JsonPointer(`/todos/${index}`),
-		value: { id: uuid(), label, completed: false }
-	};
+	return add(`/todos/${index}`, { id: uuid(), label, completed: false });
 }
 
-function calculateCountsOperation(state: any): PatchOperation[] {
+function calculateCountsOperation(state: any) {
 	const completedTodos = state.todos.filter((todo: any) => todo.completed);
 
 	return [
-		{
-			op: OperationType.REPLACE,
-			path: new JsonPointer('/activeCount'),
-			value: state.todos.length - completedTodos.length
-		},
-		{
-			op: OperationType.REPLACE,
-			path: new JsonPointer('/completedCount'),
-			value: completedTodos.length
-		}
+		replace('/activeCount', state.todos.length - completedTodos.length),
+		replace('/completedCount', completedTodos.length)
 	];
 }
 
-function toggleAllTodosOperation(state: any): PatchOperation {
+function toggleAllTodosOperation(state: any) {
 	const shouldComplete = !!find(state.todos, byCompleted(false));
 	const todos = state.todos.map((todo: any) => {
 		return { ...todo, completed: shouldComplete };
 	});
 
-	return {
-		op: OperationType.REPLACE,
-		path: new JsonPointer('/todos'),
-		value: todos
-	};
+	return replace('/todos', todos);
 }
 
-function clearCompletedOperation(state: any): PatchOperation {
+function clearCompletedOperation(state: any) {
 	const activeTodos = state.todos.filter(byCompleted(false));
-	return {
-		op: OperationType.REPLACE,
-		path: new JsonPointer('/todos'),
-		value: activeTodos
-	};
+	return replace('/todos', activeTodos);
 }
 
-function todoInputOperation(state: any, payload: any): PatchOperation {
-	return {
-		op: OperationType.REPLACE,
-		path: new JsonPointer('/currentTodo'),
-		value: payload
-	};
+function todoInputOperation(state: any, payload: any) {
+	return replace('/currentTodo', payload);
 }
 
 function toggleTodoOperation(state: any, id: string, completed: boolean) {
@@ -76,7 +51,7 @@ function editTodoOperation(state: any, id: string) {
 	return updateTodoOperation(state, { id, editing: true });
 }
 
-function saveTodoOperation(state: any, id: string, label?: string): PatchOperation {
+function saveTodoOperation(state: any, id: string, label?: string) {
 	const todo: any = { id, editing: false };
 	if (label) {
 		todo.label = label;
@@ -84,24 +59,16 @@ function saveTodoOperation(state: any, id: string, label?: string): PatchOperati
 	return updateTodoOperation(state, todo);
 }
 
-function updateTodoOperation(state: any, payload: any): PatchOperation {
+function updateTodoOperation(state: any, payload: any) {
 	const todo = find(state.todos, byId(payload.id));
 	const index = state.todos.indexOf(todo);
 
-	return {
-		op: OperationType.REPLACE,
-		path: new JsonPointer(`/todos/${index}`),
-		value: { ...todo, ...payload }
-	};
+	return replace(`/todos/${index}`, { ...todo, ...payload });
 }
 
-function removeTodoOperation(state: any, id: any): PatchOperation {
+function removeTodoOperation(state: any, id: any) {
 	const index = findIndex(state.todos, byId(id));
-
-	return {
-		op: OperationType.REMOVE,
-		path: new JsonPointer(`/todos/${index}`)
-	};
+	return remove(`/todos/${index}`);
 }
 
 export const addTodoProcess = process(addTodoOperation, calculateCountsOperation);
