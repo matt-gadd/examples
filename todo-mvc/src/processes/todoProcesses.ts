@@ -60,7 +60,7 @@ function editTodoCommand({ next }: any, get: any, [ id ]: [ string ]) {
 	next(updateTodoOperationFactory(get, { id, editing: true }));
 }
 
-function saveTodoCommand({ next }: any, get: any, id: string, label?: string) {
+function saveTodoCommand({ next }: any, get: any, [ id, label ]: [ string, string ]) {
 	const todo: any = { id, editing: false };
 	if (label) {
 		todo.label = label;
@@ -68,7 +68,7 @@ function saveTodoCommand({ next }: any, get: any, id: string, label?: string) {
 	next(updateTodoOperationFactory(get, todo));
 }
 
-function removeTodoCommand({ next }: any, get: any, id: any) {
+function removeTodoCommand({ next }: any, get: any, [ id ]: [ string ]) {
 	const index = findIndex(get('/todos'), byId(id));
 	next(remove(`/todos/${index}`));
 }
