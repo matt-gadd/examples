@@ -30,6 +30,7 @@ export interface TodoAppProperties extends WidgetProperties {
 	currentTodo: string;
 	activeCount: number;
 	completedCount: number;
+	failed: boolean;
 	addTodo: (label: string) => void;
 	editTodo: (id: string) => void;
 	saveTodo: (id: string, label?: string) => void;
@@ -51,6 +52,7 @@ export class TodoApp extends TodoAppBase<TodoAppProperties> {
 		const {
 			activeCount,
 			todos,
+			failed,
 			currentTodo,
 			completedCount,
 			addTodo,
@@ -69,6 +71,7 @@ export class TodoApp extends TodoAppBase<TodoAppProperties> {
 		const allCompleted = todoCount > 0 && completedCount === todoCount;
 
 		return v('section', { classes: this.classes(css.todoapp) }, [
+			failed ? 'FAILED' : null,
 			w<TodoHeader>('todo-header', { todo: currentTodo, todoInput, allCompleted, addTodo, toggleTodos, todoCount, undo, hasUndoOperations }),
 			v('section', {}, [
 				w(TodoListOutlet, { todos, editTodo, removeTodo, toggleTodo, saveTodo })

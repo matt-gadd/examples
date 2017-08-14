@@ -18,11 +18,11 @@ function updateTodoOperationFactory(get: any, payload: any) {
 	return replace(`/todos/${index}`, { ...todo, ...payload });
 }
 
-function addTodoCommand(next: any, get: any, payload: any) {
+function addTodoCommand({ next }: any, get: any, payload: any) {
 	next(add(`/todos/-`, payload));
 }
 
-function calculateCountsCommand(next: any, get: any) {
+function calculateCountsCommand({ next }: any, get: any) {
 	const todos = get('/todos');
 	const completedTodos = todos.filter((todo: any) => todo.completed);
 
@@ -32,7 +32,7 @@ function calculateCountsCommand(next: any, get: any) {
 	]);
 }
 
-function toggleAllTodosCommand(next: any, get: any) {
+function toggleAllTodosCommand({ next }: any, get: any) {
 	const todos = get('/todos');
 	const shouldComplete = !!find(todos, byCompleted(false));
 	const updatedTodos = todos.map((todo: any) => {
@@ -42,25 +42,25 @@ function toggleAllTodosCommand(next: any, get: any) {
 	next(replace('/todos', updatedTodos));
 }
 
-function clearCompletedCommand(next: any, get: any) {
+function clearCompletedCommand({ next }: any, get: any) {
 	const todos = get('/todos');
 	const activeTodos = todos.filter(byCompleted(false));
 	next(replace('/todos', activeTodos));
 }
 
-function todoInputCommand(next: any, get: any, payload: any) {
-	next(replace('/currentTodo', payload));
+function todoInputCommand({ next }: any, get: any, [ currentTodo ]: any) {
+	next(replace('/currentTodo', currentTodo));
 }
 
-function toggleTodoCommand(next: any, get: any, [ id, completed ]: [ string, boolean ]) {
+function toggleTodoCommand({ next }: any, get: any, [ id, completed ]: [ string, boolean ]) {
 	next(updateTodoOperationFactory(get, { id, completed: !completed }));
 }
 
-function editTodoCommand(next: any, get: any, [ id ]: [ string ]) {
+function editTodoCommand({ next }: any, get: any, [ id ]: [ string ]) {
 	next(updateTodoOperationFactory(get, { id, editing: true }));
 }
 
-function saveTodoCommand(next: any, get: any, id: string, label?: string) {
+function saveTodoCommand({ next }: any, get: any, id: string, label?: string) {
 	const todo: any = { id, editing: false };
 	if (label) {
 		todo.label = label;
@@ -68,22 +68,29 @@ function saveTodoCommand(next: any, get: any, id: string, label?: string) {
 	next(updateTodoOperationFactory(get, todo));
 }
 
-function removeTodoCommand(next: any, get: any, id: any) {
+function removeTodoCommand({ next }: any, get: any, id: any) {
 	const index = findIndex(get('/todos'), byId(id));
 	next(remove(`/todos/${index}`));
 }
 
-function postTodoCommand(next: any, get: any, payload: any) {
+function postTodoCommand({ next, cancel }: any, get: any, payload: any) {
 	// transform for server?
-	const promise = new Promise((resolve) => {
+	const promise = new Promise((resolve, reject) => {
 		setTimeout(() => {
-			resolve({ ...payload, id: uuid(), label: 'frick', completed: true });
+			if (Math.random() > 0.5) {
+				reject();
+			}
+			else {
+				resolve({ ...payload, id: uuid(), label: 'frick', completed: true });
+			}
 		}, 500);
 	});
 	return promise.then((data) => {
 		const todos =  get('/todos');
 		const index = findIndex(todos, byId(payload.id));
 		next(replace(`/todos/${index}`, { ...data }));
+	}, () => {
+		cancel(add('/failed', true));
 	});
 }
 

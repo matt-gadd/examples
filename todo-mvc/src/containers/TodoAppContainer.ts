@@ -31,6 +31,7 @@ function getProperties(store: Store<any>, properties: any) {
 		completedCount: get('/completedCount'),
 		activeCount: get('/activeCount'),
 		todos: get('/todos'),
+		failed: get('/failed'),
 		undo: store.undo.bind(store),
 		hasUndoOperations: store.hasUndoOperations
 	};
