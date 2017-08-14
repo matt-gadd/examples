@@ -44,7 +44,7 @@ export class Store<S = any> extends Evented implements Store<S> {
 	}
 
 	public runProcess(process: Process) {
-		const { undoOperations, patchedDocument } = process(this._state);
+		const { undoOperations, patchedDocument } = process(this.get);
 		this._state = patchedDocument;
 		this._undoStack.unshift(undoOperations);
 		this.emit({ type: 'invalidate' });
@@ -75,10 +75,14 @@ export class Store<S = any> extends Evented implements Store<S> {
 
 	private _createProcessRunner(operations: Operation[]) {
 		return (...args: any[]) => {
-			const wrappedProcess = (state: any): ProcessResult => {
+			const wrappedProcess = (get: any): ProcessResult => {
 				const undoOperations: any[] = [];
 				const patchedDocument = operations.reduce((newState: any, operation: Operation) => {
-					const patchOperations = operation(newState, ...args);
+					const get = (pointer: string) => {
+						const jsonPointer = new JsonPointer(pointer);
+						return jsonPointer.get(newState);
+					};
+					const patchOperations = operation(get, ...args);
 					if (!patchOperations) {
 						return newState;
 					}
@@ -86,7 +90,7 @@ export class Store<S = any> extends Evented implements Store<S> {
 					const patchedState = patch.apply(newState);
 					undoOperations.push(...patchedState.undoOperations);
 					return patchedState.patchedObject;
-				}, state);
+				}, this._state);
 				return {
 					undoOperations,
 					patchedDocument
