@@ -10,11 +10,11 @@ function byCompleted(completed: boolean) {
 	return (todo: any) => completed === todo.completed;
 }
 
-function addTodoCommand(state: any, label: string) {
+function addTodoOperationFactory(state: any, label: string) {
 	return add(`/todos/-`, { id: uuid(), label, completed: false });
 }
 
-function calculateCountsCommand(state: any) {
+function calculateCountsOperationFactory(state: any) {
 	const completedTodos = state.todos.filter((todo: any) => todo.completed);
 
 	return [
@@ -23,7 +23,7 @@ function calculateCountsCommand(state: any) {
 	];
 }
 
-function toggleAllTodosCommand(state: any) {
+function toggleAllTodosOperationFactory(state: any) {
 	const shouldComplete = !!find(state.todos, byCompleted(false));
 	const todos = state.todos.map((todo: any) => {
 		return { ...todo, completed: shouldComplete };
@@ -32,52 +32,52 @@ function toggleAllTodosCommand(state: any) {
 	return replace('/todos', todos);
 }
 
-function clearCompletedCommand(state: any) {
+function clearCompletedOperationFactory(state: any) {
 	const activeTodos = state.todos.filter(byCompleted(false));
 	return replace('/todos', activeTodos);
 }
 
-function todoInputCommand(state: any, payload: any) {
+function todoInputOperationFactory(state: any, payload: any) {
 	return replace('/currentTodo', payload);
 }
 
-function toggleTodoCommand(state: any, id: string, completed: boolean) {
-	return updateTodoCommand(state, { id, completed: !completed });
+function toggleTodoOperationFactory(state: any, id: string, completed: boolean) {
+	return updateTodoOperationFactory(state, { id, completed: !completed });
 }
 
-function editTodoCommand(state: any, id: string) {
-	return updateTodoCommand(state, { id, editing: true });
+function editTodoOperationFactory(state: any, id: string) {
+	return updateTodoOperationFactory(state, { id, editing: true });
 }
 
-function saveTodoCommand(state: any, id: string, label?: string) {
+function saveTodoOperationFactory(state: any, id: string, label?: string) {
 	const todo: any = { id, editing: false };
 	if (label) {
 		todo.label = label;
 	}
-	return updateTodoCommand(state, todo);
+	return updateTodoOperationFactory(state, todo);
 }
 
-function updateTodoCommand(state: any, payload: any) {
+function updateTodoOperationFactory(state: any, payload: any) {
 	const todo = find(state.todos, byId(payload.id));
 	const index = state.todos.indexOf(todo);
 
 	return replace(`/todos/${index}`, { ...todo, ...payload });
 }
 
-function removeTodoCommand(next: any, state: any, id: any) {
+function removeTodoOperationFactory(state: any, id: any) {
 	const index = findIndex(state.todos, byId(id));
 	if (index !== -1) {
-		next(remove(`/todos/${index}`));
+		return remove(`/todos/${index}`);
 	}
 }
 
-export const addTodoProcess = [ addTodoCommand, calculateCountsCommand ];
+export const addTodoProcess = [ addTodoOperationFactory, calculateCountsOperationFactory ];
 
-export const toggleTodoProcess = [ toggleTodoCommand, calculateCountsCommand ];
-export const updateTodoProcess = [ updateTodoCommand ];
-export const todoInputProcess = [ todoInputCommand ];
-export const editTodoProcess = [ editTodoCommand ];
-export const saveTodoProcess = [ saveTodoCommand ];
-export const toggleAllTodoProcess = [ toggleAllTodosCommand, calculateCountsCommand ];
-export const clearCompletedProcess = [ clearCompletedCommand, calculateCountsCommand ];
-export const removeTodoProcess = [ removeTodoCommand, calculateCountsCommand ];
+export const toggleTodoProcess = [ toggleTodoOperationFactory, calculateCountsOperationFactory ];
+export const updateTodoProcess = [ updateTodoOperationFactory ];
+export const todoInputProcess = [ todoInputOperationFactory ];
+export const editTodoProcess = [ editTodoOperationFactory ];
+export const saveTodoProcess = [ saveTodoOperationFactory ];
+export const toggleAllTodoProcess = [ toggleAllTodosOperationFactory, calculateCountsOperationFactory ];
+export const clearCompletedProcess = [ clearCompletedOperationFactory, calculateCountsOperationFactory ];
+export const removeTodoProcess = [ removeTodoOperationFactory, calculateCountsOperationFactory ];
