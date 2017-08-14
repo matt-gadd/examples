@@ -1,8 +1,9 @@
 import { Container } from '@dojo/widget-core/Container';
 import { TodoApp } from './../widgets/TodoApp';
+import uuid from '@dojo/core/uuid';
 import { Store } from './../store/store';
 import {
-	addTodoProcess,
+	addTodoProcessWithPost,
 	editTodoProcess,
 	toggleTodoProcess,
 	removeTodoProcess,
@@ -16,7 +17,9 @@ function getProperties(store: Store<any>, properties: any) {
 	const { get, createProcessRunner } = store;
 
 	return {
-		addTodo: createProcessRunner(addTodoProcess),
+		addTodo: createProcessRunner(addTodoProcessWithPost, (label: string) => {
+			return { id: uuid(), label, completed: false };
+		}),
 		todoInput: createProcessRunner(todoInputProcess),
 		removeTodo: createProcessRunner(removeTodoProcess),
 		toggleTodo: createProcessRunner(toggleTodoProcess),

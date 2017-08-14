@@ -10,11 +10,19 @@ function byCompleted(completed: boolean) {
 	return (todo: any) => completed === todo.completed;
 }
 
-function addTodoOperationFactory(next: any, get: any, label: string) {
-	next(add(`/todos/-`, { id: uuid(), label, completed: false }));
+function updateTodoOperationFactory(get: any, payload: any) {
+	const todos = get('/todos');
+	const todo = find(todos, byId(payload.id));
+	const index = todos.indexOf(todo);
+
+	return replace(`/todos/${index}`, { ...todo, ...payload });
 }
 
-function calculateCountsOperationFactory(next: any, get: any) {
+function addTodoCommand(next: any, get: any, payload: any) {
+	next(add(`/todos/-`, payload));
+}
+
+function calculateCountsCommand(next: any, get: any) {
 	const todos = get('/todos');
 	const completedTodos = todos.filter((todo: any) => todo.completed);
 
@@ -24,7 +32,7 @@ function calculateCountsOperationFactory(next: any, get: any) {
 	]);
 }
 
-function toggleAllTodosOperationFactory(next: any, get: any) {
+function toggleAllTodosCommand(next: any, get: any) {
 	const todos = get('/todos');
 	const shouldComplete = !!find(todos, byCompleted(false));
 	const updatedTodos = todos.map((todo: any) => {
@@ -34,51 +42,58 @@ function toggleAllTodosOperationFactory(next: any, get: any) {
 	next(replace('/todos', updatedTodos));
 }
 
-function clearCompletedOperationFactory(next: any, get: any) {
+function clearCompletedCommand(next: any, get: any) {
 	const todos = get('/todos');
 	const activeTodos = todos.filter(byCompleted(false));
 	next(replace('/todos', activeTodos));
 }
 
-function todoInputOperationFactory(next: any, get: any, payload: any) {
+function todoInputCommand(next: any, get: any, payload: any) {
 	next(replace('/currentTodo', payload));
 }
 
-function toggleTodoOperationFactory(next: any, get: any, id: string, completed: boolean) {
-	updateTodoOperationFactory(next, get, { id, completed: !completed });
+function toggleTodoCommand(next: any, get: any, [ id, completed ]: [ string, boolean ]) {
+	next(updateTodoOperationFactory(get, { id, completed: !completed }));
 }
 
-function editTodoOperationFactory(next: any, get: any, id: string) {
-	updateTodoOperationFactory(next, get, { id, editing: true });
+function editTodoCommand(next: any, get: any, [ id ]: [ string ]) {
+	next(updateTodoOperationFactory(get, { id, editing: true }));
 }
 
-function saveTodoOperationFactory(next: any, get: any, id: string, label?: string) {
+function saveTodoCommand(next: any, get: any, id: string, label?: string) {
 	const todo: any = { id, editing: false };
 	if (label) {
 		todo.label = label;
 	}
-	updateTodoOperationFactory(next, get, todo);
+	next(updateTodoOperationFactory(get, todo));
 }
 
-function updateTodoOperationFactory(next: any, get: any, payload: any) {
-	const todos = get('/todos');
-	const todo = find(todos, byId(payload.id));
-	const index = todos.indexOf(todo);
-
-	next(replace(`/todos/${index}`, { ...todo, ...payload }));
-}
-
-function removeTodoOperationFactory(next: any, get: any, id: any) {
+function removeTodoCommand(next: any, get: any, id: any) {
 	const index = findIndex(get('/todos'), byId(id));
 	next(remove(`/todos/${index}`));
 }
 
-export const addTodoProcess = [ addTodoOperationFactory, calculateCountsOperationFactory ];
-export const toggleTodoProcess = [ toggleTodoOperationFactory, calculateCountsOperationFactory ];
-export const updateTodoProcess = [ updateTodoOperationFactory ];
-export const todoInputProcess = [ todoInputOperationFactory ];
-export const editTodoProcess = [ editTodoOperationFactory ];
-export const saveTodoProcess = [ saveTodoOperationFactory ];
-export const toggleAllTodoProcess = [ toggleAllTodosOperationFactory, calculateCountsOperationFactory ];
-export const clearCompletedProcess = [ clearCompletedOperationFactory, calculateCountsOperationFactory ];
-export const removeTodoProcess = [ removeTodoOperationFactory, calculateCountsOperationFactory ];
+function postTodoCommand(next: any, get: any, payload: any) {
+	// transform for server?
+	const promise = new Promise((resolve) => {
+		setTimeout(() => {
+			resolve({ ...payload, id: uuid(), label: 'frick', completed: true });
+		}, 500);
+	});
+	return promise.then((data) => {
+		const todos =  get('/todos');
+		const index = findIndex(todos, byId(payload.id));
+		next(replace(`/todos/${index}`, { ...data }));
+	});
+}
+
+export const addTodoProcess = [ addTodoCommand, calculateCountsCommand ];
+export const addTodoProcessWithPost = [ ...addTodoProcess, postTodoCommand, calculateCountsCommand ];
+export const toggleTodoProcess = [ toggleTodoCommand, calculateCountsCommand ];
+export const updateTodoProcess = [ saveTodoCommand ];
+export const todoInputProcess = [ todoInputCommand ];
+export const editTodoProcess = [ editTodoCommand ];
+export const saveTodoProcess = [ saveTodoCommand ];
+export const toggleAllTodoProcess = [ toggleAllTodosCommand, calculateCountsCommand ];
+export const clearCompletedProcess = [ clearCompletedCommand, calculateCountsCommand ];
+export const removeTodoProcess = [ removeTodoCommand, calculateCountsCommand ];

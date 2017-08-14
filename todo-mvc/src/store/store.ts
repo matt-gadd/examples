@@ -73,8 +73,9 @@ export class Store<S = any> extends Evented implements Store<S> {
 		return jsonPointer.get(this._state);
 	}
 
-	private _createProcessRunner(operations: Operation[]) {
+	private _createProcessRunner(operations: Operation[], transformer: any) {
 		return (...args: any[]) => {
+			const transformedArgs = transformer ? transformer(...args) : args;
 			const wrappedProcess = (get: any): ProcessResult => {
 				const undoOperations: any[] = [];
 				let currentOperation = 0;
@@ -93,7 +94,7 @@ export class Store<S = any> extends Evented implements Store<S> {
 							const jsonPointer = new JsonPointer(pointer);
 							return jsonPointer.get(newState);
 						};
-						operations[currentOperation++](next, get, ...args);
+						operations[currentOperation++](next, get, transformedArgs);
 					}
 				};
 				next();
