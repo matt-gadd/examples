@@ -70,7 +70,12 @@ function saveTodoCommand({ next }: any, get: any, [ id, label ]: [ string, strin
 
 function removeTodoCommand({ next }: any, get: any, [ id ]: [ string ]) {
 	const index = findIndex(get('/todos'), byId(id));
-	next(remove(`/todos/${index}`));
+	if (index > - 1) {
+		next(remove(`/todos/${index}`));
+	}
+	else {
+		next();
+	}
 }
 
 function postTodoCommand({ next, cancel }: any, get: any, payload: any) {
@@ -80,7 +85,12 @@ function postTodoCommand({ next, cancel }: any, get: any, payload: any) {
 	return promise.then((data: any) => {
 		const todos =  get('/todos');
 		const index = findIndex(todos, byId(payload.id));
-		next(replace(`/todos/${index}`, { ...todos[index], id: data.id }));
+		if (index > -1) {
+			next(replace(`/todos/${index}`, { ...todos[index], id: data.id }));
+		}
+		else {
+			next();
+		}
 	}, () => {
 		cancel(add('/failed', true));
 	});
