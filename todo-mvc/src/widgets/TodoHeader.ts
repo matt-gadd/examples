@@ -26,7 +26,7 @@ export class TodoHeader extends TodoHeaderBase<TodoHeaderProperties> {
 	}
 
 	private _addTodo({ which, target: { value: label } }: any): void {
-		if (which === 13 && label) {
+		if (which === 13) {
 			this.properties.todoInput('');
 			this.properties.addTodo(label);
 		}
@@ -40,12 +40,6 @@ export class TodoHeader extends TodoHeaderBase<TodoHeaderProperties> {
 		this.properties.undo();
 	}
 
-	protected onElementCreated(element: HTMLElement, key: string): void {
-		if (key === 'todo-input') {
-			element.focus();
-		}
-	}
-
 	protected render(): DNode {
 		const { properties: { todo, allCompleted, hasUndoOperations } } = this;
 
@@ -55,6 +49,7 @@ export class TodoHeader extends TodoHeaderBase<TodoHeaderProperties> {
 			onkeyup: this._addTodo,
 			oninput: this._todoInput,
 			value: todo,
+			autofocus: true,
 			placeholder: 'What needs to be done?'
 		};
 

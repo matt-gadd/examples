@@ -27,15 +27,17 @@ export class TodoItem extends TodoItemBase<TodoItemProperties> {
 		this.properties.editTodo(this.properties.todo.id);
 	}
 
-	private _removeTodo() {
-		this.properties.removeTodo(this.properties.todo.id);
+	private _removeTodo({ target: { value: label } }: any) {
+		if (!label) {
+			this.properties.removeTodo(this.properties.todo.id);
+		}
 	}
 
 	private _updateTodo({ which, target: { value: label } }: any) {
 		const { todo } = this.properties;
 
-		if (which === 13 || (!which && todo.editing)) {
-			label ? this.properties.saveTodo(todo.id, label) : this._removeTodo();
+		if (which === 13) {
+			this.properties.saveTodo(todo.id, label);
 		}
 		else if (which === 27) {
 			this.properties.saveTodo(todo.id);
@@ -65,7 +67,7 @@ export class TodoItem extends TodoItemBase<TodoItemProperties> {
 			todo.editing ? v('input', {
 				key: 'edit-input',
 				onkeyup: this._updateTodo,
-				onblur: this._updateTodo,
+				onblur: this._removeTodo,
 				value: todo.label,
 				classes: this.classes(css.edit)
 			}) : null

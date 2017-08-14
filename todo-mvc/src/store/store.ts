@@ -12,7 +12,7 @@ export interface Process<S = any> {
 }
 
 export interface Operation {
-	(state: any, ...args: any[]): undefined | PatchOperation | PatchOperation[];
+	(state: any, ...args: any[]): PatchOperation | PatchOperation[];
 }
 
 /**
@@ -77,23 +77,29 @@ export class Store<S = any> extends Evented implements Store<S> {
 		return (...args: any[]) => {
 			const wrappedProcess = (get: any): ProcessResult => {
 				const undoOperations: any[] = [];
-				const patchedDocument = operations.reduce((newState: any, operation: Operation) => {
-					const get = (pointer: string) => {
-						const jsonPointer = new JsonPointer(pointer);
-						return jsonPointer.get(newState);
-					};
-					const patchOperations = operation(get, ...args);
-					if (!patchOperations) {
-						return newState;
+				let currentOperation = 0;
+				let newState = this._state;
+
+				const next = (patchOperations?: PatchOperation | PatchOperation[]) => {
+					if (patchOperations) {
+						const patch = new JsonPatch(patchOperations);
+						const patchedState = patch.apply(newState);
+						undoOperations.push(...patchedState.undoOperations);
+						newState = patchedState.patchedObject;
 					}
-					const patch = new JsonPatch(patchOperations);
-					const patchedState = patch.apply(newState);
-					undoOperations.push(...patchedState.undoOperations);
-					return patchedState.patchedObject;
-				}, this._state);
+
+					if (currentOperation < operations.length) {
+						const get = (pointer: string) => {
+							const jsonPointer = new JsonPointer(pointer);
+							return jsonPointer.get(newState);
+						};
+						operations[currentOperation++](next, get, ...args);
+					}
+				};
+				next();
 				return {
 					undoOperations,
-					patchedDocument
+					patchedDocument: newState
 				};
 			};
 			this.runProcess(wrappedProcess);
