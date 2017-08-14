@@ -74,14 +74,13 @@ function removeTodoCommand({ next }: any, get: any, id: any) {
 }
 
 function postTodoCommand({ next, cancel }: any, get: any, payload: any) {
-	// transform for server?
 	const promise = new Promise((resolve, reject) => {
 		setTimeout(() => resolve({ ...payload, id: uuid(), label: payload.label, completed: true }), 5000);
 	});
-	return promise.then((data) => {
+	return promise.then((data: any) => {
 		const todos =  get('/todos');
 		const index = findIndex(todos, byId(payload.id));
-		next(replace(`/todos/${index}`, { ...data }));
+		next(replace(`/todos/${index}`, { ...todos[index], id: data.id }));
 	}, () => {
 		cancel(add('/failed', true));
 	});

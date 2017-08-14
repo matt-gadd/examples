@@ -58,7 +58,7 @@ export class TodoItem extends TodoItemBase<TodoItemProperties> {
 			Boolean(todo.completed && !todo.editing) ? css.completed : null
 		);
 
-		return v('li', { classes: todoItemClasses }, [
+		return v('li', { id: todo.id, classes: todoItemClasses }, [
 			v('div', { classes: this.classes(css.view) }, [
 				v('input', { classes: this.classes(css.toggle), type: 'checkbox', checked: todo.completed, onchange: this._toggleTodo }),
 				v('label', { classes: this.classes(css.todoLabel), innerHTML: todo.label, ondblclick: this._editTodo }),
