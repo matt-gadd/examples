@@ -13,7 +13,7 @@ import {
 } from './../processes/todoProcesses';
 
 function getProperties(store: Store<any>, properties: any) {
-	const { state, createProcessRunner } = store;
+	const { get, createProcessRunner } = store;
 
 	return {
 		addTodo: createProcessRunner(addTodoProcess),
@@ -24,10 +24,10 @@ function getProperties(store: Store<any>, properties: any) {
 		clearCompleted: createProcessRunner(clearCompletedProcess),
 		editTodo: createProcessRunner(editTodoProcess),
 		saveTodo: createProcessRunner(saveTodoProcess),
-		currentTodo: state.currentTodo,
-		completedCount: state.completedCount,
-		activeCount: state.activeCount,
-		todos: state.todos,
+		currentTodo: get('/currentTodo'),
+		completedCount: get('/completedCount'),
+		activeCount: get('/activeCount'),
+		todos: get('/todos'),
 		undo: store.undo.bind(store),
 		hasUndoOperations: store.hasUndoOperations
 	};

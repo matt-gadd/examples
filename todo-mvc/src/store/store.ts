@@ -1,5 +1,6 @@
 import { Evented } from '@dojo/core/Evented';
 import { JsonPatch, PatchOperation } from './patch/JsonPatch';
+import { JsonPointer } from './patch/JsonPointer';
 
 export interface ProcessResult<S = any> {
 	patchedDocument: S;
@@ -8,10 +9,6 @@ export interface ProcessResult<S = any> {
 
 export interface Process<S = any> {
 	(state: S): ProcessResult;
-}
-
-export interface ProcessInstruction<S = any> {
-	do: (...args: any[]) => Process<S>;
 }
 
 export interface Operation {
@@ -25,35 +22,7 @@ export interface Operation {
  * @template S State object type, defaults to any.
  */
 export interface Store<S = any> extends Evented {
-	getState(): Readonly<S>;
 	runProcess(process: Process): void;
-}
-
-/**
- * Create a process of operations
- */
-export function process(...operations: Operation[]) {
-	return {
-		do: (...args: any[]): (state: any) => ProcessResult => {
-			return (state: any): ProcessResult => {
-				const undoOperations: any[] = [];
-				const patchedDocument = operations.reduce((newState: any, operation: Operation) => {
-					const patchOperations = operation(newState, ...args);
-					if (!patchOperations) {
-						return newState;
-					}
-					const patch = new JsonPatch(patchOperations);
-					const patchedState = patch.apply(newState);
-					undoOperations.push(...patchedState.undoOperations);
-					return patchedState.patchedObject;
-				}, state);
-				return {
-					undoOperations,
-					patchedDocument
-				};
-			};
-		}
-	};
 }
 
 /**
@@ -67,14 +36,11 @@ export class Store<S = any> extends Evented implements Store<S> {
 	private _undoStack: PatchOperation[][] = [];
 
 	public createProcessRunner = this._createProcessRunner.bind(this);
+	public get = this._get.bind(this);
 
 	constructor(initialState: S = <S> {}) {
 		super({});
 		this._state = initialState;
-	}
-
-	public get state(): Readonly<S> {
-		return this._state;
 	}
 
 	public runProcess(process: Process) {
@@ -102,9 +68,31 @@ export class Store<S = any> extends Evented implements Store<S> {
 		return this._undoStack.length > 0;
 	}
 
-	private _createProcessRunner(process: ProcessInstruction) {
+	private _get(pointer: string): any {
+		const jsonPointer = new JsonPointer(pointer);
+		return jsonPointer.get(this._state);
+	}
+
+	private _createProcessRunner(operations: Operation[]) {
 		return (...args: any[]) => {
-			this.runProcess(process.do(...args));
+			const wrappedProcess = (state: any): ProcessResult => {
+				const undoOperations: any[] = [];
+				const patchedDocument = operations.reduce((newState: any, operation: Operation) => {
+					const patchOperations = operation(newState, ...args);
+					if (!patchOperations) {
+						return newState;
+					}
+					const patch = new JsonPatch(patchOperations);
+					const patchedState = patch.apply(newState);
+					undoOperations.push(...patchedState.undoOperations);
+					return patchedState.patchedObject;
+				}, state);
+				return {
+					undoOperations,
+					patchedDocument
+				};
+			};
+			this.runProcess(wrappedProcess);
 		};
 	};
 }
