@@ -76,14 +76,7 @@ function removeTodoCommand({ next }: any, get: any, id: any) {
 function postTodoCommand({ next, cancel }: any, get: any, payload: any) {
 	// transform for server?
 	const promise = new Promise((resolve, reject) => {
-		setTimeout(() => {
-			if (Math.random() > 0.5) {
-				reject();
-			}
-			else {
-				resolve({ ...payload, id: uuid(), label: 'frick', completed: true });
-			}
-		}, 500);
+		setTimeout(() => resolve({ ...payload, id: uuid(), label: payload.label, completed: true }), 5000);
 	});
 	return promise.then((data) => {
 		const todos =  get('/todos');

@@ -1,6 +1,7 @@
 import { Evented } from '@dojo/core/Evented';
 import { JsonPatch, PatchOperation } from './patch/JsonPatch';
 import { JsonPointer } from './patch/JsonPointer';
+import { isThenable } from '@dojo/shim/Promise';
 
 export interface ProcessResult<S = any> {
 	patchedDocument: S;
@@ -43,13 +44,6 @@ export class Store<S = any> extends Evented implements Store<S> {
 		this._state = initialState;
 	}
 
-	public runProcess(process: Process) {
-		const { undoOperations, patchedDocument } = process(this.get);
-		this._state = patchedDocument;
-		this._undoStack.unshift(undoOperations);
-		this.emit({ type: 'invalidate' });
-	}
-
 	public undo(count = 1) {
 		if (this._undoStack.length > 0) {
 			const ops: PatchOperation[][] = this._undoStack.splice(0, count);
@@ -73,8 +67,7 @@ export class Store<S = any> extends Evented implements Store<S> {
 		return jsonPointer.get(this._state);
 	}
 
-	private _flush(state: any, undoOps?: any[]) {
-		this._state = state;
+	private _flush(undoOps?: any[]) {
 		if (undoOps) {
 			this._undoStack.unshift(undoOps);
 		}
@@ -86,40 +79,34 @@ export class Store<S = any> extends Evented implements Store<S> {
 		return (...args: any[]) => {
 			const transformedArgs = transformer ? transformer(...args) : args;
 			let undoOperations: any[] = [];
-			let newState = this._state;
 
 			const cancel = (patchOperations?: PatchOperation | PatchOperation[]) => {
-
 				const patch = new JsonPatch(undoOperations);
-				let patchedState = patch.apply(newState);
+				this._state = patch.apply(this._state);
 				if (patchOperations) {
 					const patch = new JsonPatch(patchOperations);
-					patchedState = patch.apply(patchedState.patchedObject);
+					this._state = patch.apply(this._state);
 				}
-				this._flush(patchedState.patchedObject);
+				this._flush();
 			};
 
 			const next = (patchOperations?: PatchOperation | PatchOperation[]) => {
 				if (patchOperations) {
 					const patch = new JsonPatch(patchOperations);
-					const patchedState = patch.apply(newState);
+					const patchedState = patch.apply(this._state);
 					undoOperations.push(...patchedState.undoOperations);
-					newState = patchedState.patchedObject;
+					this._state = patchedState.patchedObject;
 				}
 
 				const operation = operations.shift();
 				if (operation) {
-					const get = (pointer: string) => {
-						const jsonPointer = new JsonPointer(pointer);
-						return jsonPointer.get(newState);
-					};
-					const result = operation({ next, cancel }, get, transformedArgs);
-					if (result instanceof Promise) {
-						this._flush(newState);
+					operation({ next, cancel }, this.get, transformedArgs);
+					if (isThenable(Promise)) {
+						this._flush();
 					}
 				}
 				else {
-					this._flush(newState, undoOperations);
+					this._flush(undoOperations);
 				}
 			};
 			next();
