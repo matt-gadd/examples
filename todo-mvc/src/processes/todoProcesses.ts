@@ -14,7 +14,6 @@ function updateTodoOperationFactory(get: any, payload: any) {
 	const todos = get('/todos');
 	const todo = find(todos, byId(payload.id));
 	const index = todos.indexOf(todo);
-
 	return replace(`/todos/${index}`, { ...todo, ...payload });
 }
 
@@ -25,7 +24,6 @@ function addTodoCommand({ next }: any, get: any, payload: any) {
 function calculateCountsCommand({ next }: any, get: any) {
 	const todos = get('/todos');
 	const completedTodos = todos.filter((todo: any) => todo.completed);
-
 	next([
 		replace('/activeCount', todos.length - completedTodos.length),
 		replace('/completedCount', completedTodos.length)
@@ -38,7 +36,6 @@ function toggleAllTodosCommand({ next }: any, get: any) {
 	const updatedTodos = todos.map((todo: any) => {
 		return { ...todo, completed: shouldComplete };
 	});
-
 	next(replace('/todos', updatedTodos));
 }
 
@@ -70,12 +67,7 @@ function saveTodoCommand({ next }: any, get: any, [ id, label ]: [ string, strin
 
 function removeTodoCommand({ next }: any, get: any, [ id ]: [ string ]) {
 	const index = findIndex(get('/todos'), byId(id));
-	if (index > - 1) {
-		next(remove(`/todos/${index}`));
-	}
-	else {
-		next();
-	}
+	index > -1 ? next(remove(`/todos/${index}`)) : next();
 }
 
 function postTodoCommand({ next, cancel }: any, get: any, payload: any) {
@@ -85,15 +77,8 @@ function postTodoCommand({ next, cancel }: any, get: any, payload: any) {
 	return promise.then((data: any) => {
 		const todos =  get('/todos');
 		const index = findIndex(todos, byId(payload.id));
-		if (index > -1) {
-			next(replace(`/todos/${index}`, { ...todos[index], id: data.id }));
-		}
-		else {
-			next();
-		}
-	}, () => {
-		cancel(add('/failed', true));
-	});
+		index > -1 ? next(replace(`/todos/${index}`, { ...todos[index], id: data.id })) : next();
+	}, () => cancel(add('/failed', true)));
 }
 
 export const addTodoProcess = [ addTodoCommand, calculateCountsCommand ];
