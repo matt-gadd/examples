@@ -2,7 +2,6 @@ import { Evented } from '@dojo/core/Evented';
 import { JsonPatch, PatchOperation } from './patch/JsonPatch';
 import { JsonPointer } from './patch/JsonPointer';
 import { isThenable } from '@dojo/shim/Promise';
-
 export interface ProcessResult<S = any> {
 	patchedDocument: S;
 	undoOperations: PatchOperation[];
@@ -34,7 +33,7 @@ export interface Store<S = any> extends Evented {
  */
 export class Store<S = any> extends Evented implements Store<S> {
 	private _state: S;
-	private _undoStack: PatchOperation[][] = [];
+	private _undoStack: { process: any, undoOperations: PatchOperation[] }[] = [];
 
 	public createProcessRunner = this._createProcessRunner.bind(this);
 	public get = this._get.bind(this);
@@ -44,17 +43,28 @@ export class Store<S = any> extends Evented implements Store<S> {
 		this._state = initialState;
 	}
 
-	public undo(count = 1) {
+	public undo(...process: any[]) {
 		if (this._undoStack.length > 0) {
-			const ops: PatchOperation[][] = this._undoStack.splice(0, count);
+			let foundIndex = -1;
+			this._undoStack.some((undo, index) => {
+				if (process.indexOf(undo.process) > -1) {
+					foundIndex = index;
+					return true;
+				}
+				return false;
+			});
 
-			this._state = ops.reduce((state, op) => {
-				const patch = new JsonPatch(op);
-				const patchedState = patch.apply(state);
-				return patchedState.patchedObject;
-			}, this._state);
+			if (foundIndex > -1) {
+				const ops: { process: any, undoOperations: PatchOperation[] }[] = this._undoStack.splice(0, foundIndex + 1);
+				// debugger;
+				this._state = ops.reduce((state, op) => {
+					const patch = new JsonPatch(op.undoOperations.reverse());
+					const patchedState = patch.apply(state);
+					return patchedState.patchedObject;
+				}, this._state);
 
-			this.emit({ type: 'invalidate' });
+				this.emit({ type: 'invalidate' });
+			}
 		}
 	}
 
@@ -67,7 +77,7 @@ export class Store<S = any> extends Evented implements Store<S> {
 		return jsonPointer.get(this._state);
 	}
 
-	private _flush(undoOps?: any[]) {
+	private _flush(undoOps?: { process: any, undoOperations: PatchOperation[] }) {
 		if (undoOps) {
 			this._undoStack.unshift(undoOps);
 		}
@@ -75,17 +85,21 @@ export class Store<S = any> extends Evented implements Store<S> {
 	}
 
 	private _createProcessRunner(operations: Operation[], transformer: any) {
-		operations = [ ...operations ];
+		const operationsCopy = [ ...operations ];
 		return (...args: any[]) => {
 			const transformedArgs = transformer ? transformer(...args) : args;
 			let undoOperations: any[] = [];
 
 			const cancel = (patchOperations?: PatchOperation | PatchOperation[]) => {
 				const patch = new JsonPatch(undoOperations);
-				this._state = patch.apply(this._state);
+				const patchedState = patch.apply(this._state);
+				this._state = patchedState.patchedObject;
+				console.log(this._state);
 				if (patchOperations) {
 					const patch = new JsonPatch(patchOperations);
-					this._state = patch.apply(this._state);
+					const patchedState = patch.apply(this._state);
+					this._state = patchedState.patchedObject;
+					console.log(this._state);
 				}
 				this._flush();
 			};
@@ -96,17 +110,19 @@ export class Store<S = any> extends Evented implements Store<S> {
 					const patchedState = patch.apply(this._state);
 					undoOperations.push(...patchedState.undoOperations);
 					this._state = patchedState.patchedObject;
+					console.log(this._state);
 				}
 
-				const operation = operations.shift();
+				const operation = operationsCopy.shift();
 				if (operation) {
-					operation({ next, cancel }, this.get, transformedArgs);
-					if (isThenable(Promise)) {
-						this._flush();
+					const promise = operation({ next, cancel }, this.get, transformedArgs);
+					if (isThenable(promise)) {
+						this._flush({ process: operations, undoOperations });
+						undoOperations = [];
 					}
 				}
 				else {
-					this._flush(undoOperations);
+					this._flush({ process: operations, undoOperations });
 				}
 			};
 			next();

@@ -75,6 +75,9 @@ export class JsonPointer {
 	}
 
 	get(object: any): any {
+		if (this.segments.length === 0) {
+			return object;
+		}
 		const pointerTarget: PointerTarget = walk(this.segments, object, false);
 		return pointerTarget.target[pointerTarget.segment];
 	}

@@ -32,7 +32,9 @@ function getProperties(store: Store<any>, properties: any) {
 		activeCount: get('/activeCount'),
 		todos: get('/todos'),
 		failed: get('/failed'),
-		undo: store.undo.bind(store),
+		undo: (): void => {
+			store.undo(addTodoProcessWithPost, toggleTodoProcess);
+		},
 		hasUndoOperations: store.hasUndoOperations
 	};
 }

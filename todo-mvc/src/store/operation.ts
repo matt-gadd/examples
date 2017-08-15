@@ -1,4 +1,4 @@
-import { RemovePatchOperation, ReplacePatchOperation, AddPatchOperation, OperationType } from './patch/JsonPatch';
+import { RemovePatchOperation, ReplacePatchOperation, AddPatchOperation, TestPatchOperation, OperationType } from './patch/JsonPatch';
 import { JsonPointer } from './patch/JsonPointer';
 
 export function add(path: string, value: any): AddPatchOperation {
@@ -21,5 +21,13 @@ export function remove(path: string): RemovePatchOperation {
 	return {
 		op: OperationType.REMOVE,
 		path: new JsonPointer(path)
+	};
+}
+
+export function test(path: string, value: any): TestPatchOperation {
+	return {
+		op: OperationType.TEST,
+		path: new JsonPointer(path),
+		value
 	};
 }

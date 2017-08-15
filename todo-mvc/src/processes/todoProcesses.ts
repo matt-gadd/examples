@@ -18,7 +18,8 @@ function updateTodoOperationFactory(get: any, payload: any) {
 }
 
 function addTodoCommand({ next }: any, get: any, payload: any) {
-	next(add(`/todos/-`, payload));
+	const todos = get('/todos');
+	next(add(`/todos/${todos.length}`, payload));
 }
 
 function calculateCountsCommand({ next }: any, get: any) {
@@ -72,12 +73,13 @@ function removeTodoCommand({ next }: any, get: any, [ id ]: [ string ]) {
 
 function postTodoCommand({ next, cancel }: any, get: any, payload: any) {
 	const promise = new Promise((resolve, reject) => {
-		setTimeout(() => resolve({ ...payload, id: uuid(), label: payload.label, completed: true }), 5000);
+		// setTimeout(() => resolve({ ...payload, id: uuid(), label: payload.label, completed: true }), 5000);
+		reject();
 	});
 	return promise.then((data: any) => {
 		const todos =  get('/todos');
 		const index = findIndex(todos, byId(payload.id));
-		index > -1 ? next(replace(`/todos/${index}`, { ...todos[index], id: data.id })) : next();
+		index > -1 ? next(replace(`/todos/${index}`, { ...todos[index], id: data.id, label: 'a' })) : next();
 	}, () => cancel(add('/failed', true)));
 }
 
