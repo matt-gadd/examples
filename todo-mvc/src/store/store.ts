@@ -84,8 +84,8 @@ export class Store<S = any> extends Evented implements Store<S> {
 	}
 
 	private _createProcessRunner(operations: Operation[], transformer: any) {
-		const operationsCopy = [ ...operations ];
 		return (...args: any[]) => {
+			const operationsCopy = [ ...operations ];
 			const transformedArgs = transformer ? transformer(...args) : args;
 			let undoOperations: any[] = [];
 

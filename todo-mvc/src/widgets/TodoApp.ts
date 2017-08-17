@@ -71,13 +71,15 @@ export class TodoApp extends TodoAppBase<TodoAppProperties> {
 		const todoCount = todos.length;
 		const allCompleted = todoCount > 0 && completedCount === todoCount;
 
-		return v('section', { classes: this.classes(css.todoapp) }, [
-			failed ? 'FAILED' : null,
-			w<TodoHeader>('todo-header', { todo: currentTodo, todoInput, allCompleted, addTodo, toggleTodos, todoCount, undo, hasUndoOperations }),
-			v('section', {}, [
-				w(TodoListOutlet, { todos, editTodo, removeTodo, toggleTodo, saveTodo })
-			]),
-			todoCount ? w(TodoFooterOutlet, { clearCompleted, activeCount, todoCount }) : null
+		return  v('div', [
+			failed ? v('div', { classes: this.classes(css.growl) }, [ 'failed' ]) : null,
+			v('section', { classes: this.classes(css.todoapp) }, [
+				w<TodoHeader>('todo-header', { todo: currentTodo, todoInput, allCompleted, addTodo, toggleTodos, todoCount, undo, hasUndoOperations }),
+				v('section', {}, [
+					w(TodoListOutlet, { todos, editTodo, removeTodo, toggleTodo, saveTodo })
+				]),
+				todoCount ? w(TodoFooterOutlet, { clearCompleted, activeCount, todoCount }) : null
+			])
 		]);
 	}
 }
