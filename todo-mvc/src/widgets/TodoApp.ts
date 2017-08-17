@@ -23,6 +23,7 @@ export interface Todo {
 	label: string;
 	completed: boolean;
 	editing?: boolean;
+	loading?: boolean;
 }
 
 export interface TodoAppProperties extends WidgetProperties {

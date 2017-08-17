@@ -77,11 +77,6 @@ function saveTodoCommand({ next }: any, get: any, [ id, label ]: [ string, strin
 	next(updateTodoOperationFactory(get, todo));
 }
 
-function removeTodoCommand({ next }: any, get: any, [ id ]: [ string ]) {
-	const index = findIndex(get('/todos'), byId(id));
-	index > -1 ? next(remove(`/todos/${index}`)) : next();
-}
-
 function postTodoCommand({ next, cancel }: any, get: any, payload: any) {
 	const fetchOptions = {
 		body: JSON.stringify(payload),
@@ -97,6 +92,7 @@ function postTodoCommand({ next, cancel }: any, get: any, payload: any) {
 			const index = findIndex(todos, byId(payload.id));
 			next(replace(`/todos/${index}`, {
 				...todos[index],
+				loading: false,
 				id: data.uuid
 			}));
 		}, () => {

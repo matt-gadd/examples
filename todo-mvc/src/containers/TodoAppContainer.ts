@@ -18,7 +18,7 @@ function getProperties(store: Store<any>, properties: any) {
 
 	return {
 		addTodo: createProcessRunner(addTodoProcessWithPost, (label: string) => {
-			return { id: uuid(), label, completed: false };
+			return { id: uuid(), label, completed: false, loading: true };
 		}),
 		todoInput: createProcessRunner(todoInputProcess),
 		removeTodo: createProcessRunner(deleteTodoProcess),

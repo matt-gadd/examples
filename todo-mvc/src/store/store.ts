@@ -56,7 +56,6 @@ export class Store<S = any> extends Evented implements Store<S> {
 
 			if (foundIndex > -1) {
 				const ops: { process: any, undoOperations: PatchOperation[] }[] = this._undoStack.splice(0, foundIndex + 1);
-				// debugger;
 				this._state = ops.reduce((state, op) => {
 					const patch = new JsonPatch(op.undoOperations.reverse());
 					const patchedState = patch.apply(state);
@@ -91,7 +90,7 @@ export class Store<S = any> extends Evented implements Store<S> {
 			let undoOperations: any[] = [];
 
 			const cancel = (patchOperations?: PatchOperation | PatchOperation[]) => {
-				const patch = new JsonPatch(undoOperations);
+				const patch = new JsonPatch([ ...undoOperations].reverse());
 				const patchedState = patch.apply(this._state);
 				this._state = patchedState.patchedObject;
 				if (patchOperations) {
@@ -114,8 +113,8 @@ export class Store<S = any> extends Evented implements Store<S> {
 				if (operation) {
 					const promise = operation({ next, cancel }, this.get, transformedArgs);
 					if (isThenable(promise)) {
-						this._flush({ process: operations, undoOperations });
-						undoOperations = [];
+						/*this._flush({ process: operations, undoOperations });*/
+						/*undoOperations = [];*/
 					}
 				}
 				else {

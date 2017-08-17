@@ -53,9 +53,10 @@ export class TodoItem extends TodoItemBase<TodoItemProperties> {
 	protected render(): DNode {
 		const { properties: { todo } } = this;
 		const todoItemClasses = this.classes(
+			todo.loading ? css.loading : null,
 			css.todoItem,
-			Boolean(todo.editing) ? css.editing : null,
-			Boolean(todo.completed && !todo.editing) ? css.completed : null
+			todo.editing ? css.editing : null,
+			(todo.completed && !todo.editing) ? css.completed : null
 		);
 
 		return v('li', { id: todo.id, classes: todoItemClasses }, [
