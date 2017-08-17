@@ -1,6 +1,10 @@
 import { find, findIndex } from '@dojo/shim/array';
 import uuid from '@dojo/core/uuid';
 import { add, replace, remove } from './../store/operation';
+import { createClient } from 'service-mocker/client';
+const scriptURL = require('sw-loader!../util/server');
+
+const { ready } = createClient(scriptURL);
 
 function byId(id: string) {
 	return (todo: any) => id === todo.id;
@@ -72,15 +76,24 @@ function removeTodoCommand({ next }: any, get: any, [ id ]: [ string ]) {
 }
 
 function postTodoCommand({ next, cancel }: any, get: any, payload: any) {
-	const promise = new Promise((resolve, reject) => {
-		// setTimeout(() => resolve({ ...payload, id: uuid(), label: payload.label, completed: true }), 5000);
-		reject();
-	});
-	return promise.then((data: any) => {
-		const todos =  get('/todos');
-		const index = findIndex(todos, byId(payload.id));
-		index > -1 ? next(replace(`/todos/${index}`, { ...todos[index], id: data.id, label: 'a' })) : next();
-	}, () => cancel(add('/failed', true)));
+	const fetchOptions = {
+		body: JSON.stringify(payload),
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' }
+	};
+	return ready
+		.then(() => fetch('/todo', fetchOptions))
+		.then((response: Response) => response.json())
+		.then((data: any) => {
+			const todos =  get('/todos');
+			const index = findIndex(todos, byId(payload.id));
+			next(replace(`/todos/${index}`, {
+				...todos[index],
+				id: data.id
+			}));
+		}, () => {
+			cancel(add('/failed', true));
+		});
 }
 
 export const addTodoProcess = [ addTodoCommand, calculateCountsCommand ];

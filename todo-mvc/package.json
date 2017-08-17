@@ -25,6 +25,7 @@
     "@types/node": "^6.0.46",
     "chai": "^3.5.0",
     "intern": "~3.4.1",
+    "sw-loader": "^0.1.1",
     "typescript": "~2.4.1"
   },
   "dependencies": {
@@ -33,6 +34,7 @@
     "@dojo/i18n": "next",
     "@dojo/routing": "next",
     "@dojo/shim": "next",
-    "@dojo/widget-core": "next"
+    "@dojo/widget-core": "next",
+    "service-mocker": "^2.0.1"
   }
 }

@@ -94,12 +94,10 @@ export class Store<S = any> extends Evented implements Store<S> {
 				const patch = new JsonPatch(undoOperations);
 				const patchedState = patch.apply(this._state);
 				this._state = patchedState.patchedObject;
-				console.log(this._state);
 				if (patchOperations) {
 					const patch = new JsonPatch(patchOperations);
 					const patchedState = patch.apply(this._state);
 					this._state = patchedState.patchedObject;
-					console.log(this._state);
 				}
 				this._flush();
 			};
@@ -110,7 +108,6 @@ export class Store<S = any> extends Evented implements Store<S> {
 					const patchedState = patch.apply(this._state);
 					undoOperations.push(...patchedState.undoOperations);
 					this._state = patchedState.patchedObject;
-					console.log(this._state);
 				}
 
 				const operation = operationsCopy.shift();
