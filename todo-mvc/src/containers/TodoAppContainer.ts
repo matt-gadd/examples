@@ -10,13 +10,15 @@ import {
 	toggleAllTodoProcess,
 	clearCompletedProcess,
 	saveTodoProcess,
-	todoInputProcess
+	todoInputProcess,
+	clearFailedProcess
 } from './../processes/todoProcesses';
 
 function getProperties(store: Store<any>, properties: any) {
 	const { get, createProcessRunner } = store;
 
 	return {
+		clearFailed: createProcessRunner(clearFailedProcess),
 		addTodo: createProcessRunner(addTodoProcessWithPost, (label: string) => {
 			return { id: uuid(), label, completed: false, loading: true };
 		}),

@@ -21,6 +21,18 @@
     width: 550px;
     padding: 20px;
     box-sizing: border-box;
-    opacity: 1.0;
+    opacity: 0;
 	background: #ea4335;
+}
+
+.growlShow {
+	visibility: visible;
+	transition: opacity 1s linear;
+	opacity: 1;
+}
+
+.growlHidden {
+	visibility: hidden;
+	opacity: 0;
+	transition: visibility 0s 1s, opacity 1s linear;
 }

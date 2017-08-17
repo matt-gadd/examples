@@ -77,6 +77,10 @@ function saveTodoCommand({ next }: any, get: any, [ id, label ]: [ string, strin
 	next(updateTodoOperationFactory(get, todo));
 }
 
+function clearFailedCommand({ next }: any, get: any) {
+	next(replace('/failed', false));
+}
+
 function postTodoCommand({ next, cancel }: any, get: any, payload: any) {
 	const fetchOptions = {
 		body: JSON.stringify(payload),
@@ -130,6 +134,7 @@ function deleteTodoCommand({ next, cancel }: any, get: any, [ id ]: [ string ]) 
 		});
 }
 
+export const clearFailedProcess = [ clearFailedCommand ];
 export const deleteTodoProcess = [ deleteTodoCommand, calculateCountsCommand ];
 export const getTodosProcess = [ getTodosCommand, calculateCountsCommand ];
 export const addTodoProcess = [ addTodoCommand, calculateCountsCommand ];

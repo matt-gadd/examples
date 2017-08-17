@@ -27,6 +27,7 @@ export interface Todo {
 }
 
 export interface TodoAppProperties extends WidgetProperties {
+	clearFailed: () => void;
 	todos: Todo[];
 	currentTodo: string;
 	activeCount: number;
@@ -51,6 +52,7 @@ export class TodoApp extends TodoAppBase<TodoAppProperties> {
 
 	protected render(): DNode {
 		const {
+			clearFailed,
 			activeCount,
 			todos,
 			failed,
@@ -68,11 +70,17 @@ export class TodoApp extends TodoAppBase<TodoAppProperties> {
 			hasUndoOperations
 		} = this.properties;
 
+		if (failed) {
+			setTimeout(() => clearFailed(), 3000);
+		}
+
 		const todoCount = todos.length;
 		const allCompleted = todoCount > 0 && completedCount === todoCount;
 
+		const showOrHideGrowl = failed ? css.growlShow : css.growlHidden;
+
 		return  v('div', [
-			failed ? v('div', { classes: this.classes(css.growl) }, [ 'failed' ]) : null,
+			v('div', { classes: this.classes(css.growl, showOrHideGrowl) }, [ 'failed' ]),
 			v('section', { classes: this.classes(css.todoapp) }, [
 				w<TodoHeader>('todo-header', { todo: currentTodo, todoInput, allCompleted, addTodo, toggleTodos, todoCount, undo, hasUndoOperations }),
 				v('section', {}, [
