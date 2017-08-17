@@ -10,6 +10,13 @@ function byId(id: string) {
 	return (todo: any) => id === todo.id;
 }
 
+function throwIfNotOk(response: Response) {
+	if (!response.ok) {
+		throw new Error();
+	}
+	return response;
+}
+
 function byCompleted(completed: boolean) {
 	return (todo: any) => completed === todo.completed;
 }
@@ -83,19 +90,52 @@ function postTodoCommand({ next, cancel }: any, get: any, payload: any) {
 	};
 	return ready
 		.then(() => fetch('/todo', fetchOptions))
+		.then(throwIfNotOk)
 		.then((response: Response) => response.json())
 		.then((data: any) => {
 			const todos =  get('/todos');
 			const index = findIndex(todos, byId(payload.id));
 			next(replace(`/todos/${index}`, {
 				...todos[index],
-				id: data.id
+				id: data.uuid
 			}));
 		}, () => {
 			cancel(add('/failed', true));
 		});
 }
 
+function getTodosCommand({ next, cancel }: any, get: any, payload: any) {
+	return ready
+		.then(() => fetch('/todos'))
+		.then((response: Response) => response.json())
+		.then((data: any) => {
+			return data.map(({ uuid, label, completed }: any) => {
+				return { id: uuid, label, completed };
+			});
+		})
+		.then((todos: any) => next(replace(`/todos`, todos)));
+
+}
+
+function deleteTodoCommand({ next, cancel }: any, get: any, [ id ]: [ string ]) {
+	const fetchOptions = {
+		method: 'DELETE',
+		headers: { 'Content-Type': 'text/plain' }
+	};
+	return ready
+		.then(() => find(get('/todos'), byId(id)))
+		.then((todo: any) => fetch(`/todo/${todo.id}`, fetchOptions))
+		.then(throwIfNotOk)
+		.then(() => {
+			const index = findIndex(get('/todos'), byId(id));
+			next(remove(`/todos/${index}`));
+		}, () => {
+			cancel(add('/failed', true));
+		});
+}
+
+export const deleteTodoProcess = [ deleteTodoCommand, calculateCountsCommand ];
+export const getTodosProcess = [ getTodosCommand, calculateCountsCommand ];
 export const addTodoProcess = [ addTodoCommand, calculateCountsCommand ];
 export const addTodoProcessWithPost = [ ...addTodoProcess, postTodoCommand, calculateCountsCommand ];
 export const toggleTodoProcess = [ toggleTodoCommand, calculateCountsCommand ];
@@ -105,4 +145,3 @@ export const editTodoProcess = [ editTodoCommand ];
 export const saveTodoProcess = [ saveTodoCommand ];
 export const toggleAllTodoProcess = [ toggleAllTodosCommand, calculateCountsCommand ];
 export const clearCompletedProcess = [ clearCompletedCommand, calculateCountsCommand ];
-export const removeTodoProcess = [ removeTodoCommand, calculateCountsCommand ];

@@ -4,6 +4,7 @@ import { registry } from '@dojo/widget-core/d';
 import { BaseInjector, Injector } from '@dojo/widget-core/Injector';
 import { TodoAppContainer } from './containers/TodoAppContainer';
 import { Store } from './store/store';
+import { getTodosProcess } from './processes/todoProcesses';
 
 const root = document.querySelector('my-app') || undefined;
 
@@ -26,6 +27,7 @@ const defaultState = {
 };
 
 const store = new Store(defaultState);
+store.createProcessRunner(getTodosProcess)();
 
 registry.define('application-state', Injector(BaseInjector, store));
 

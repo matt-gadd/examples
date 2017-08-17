@@ -6,7 +6,7 @@ import {
 	addTodoProcessWithPost,
 	editTodoProcess,
 	toggleTodoProcess,
-	removeTodoProcess,
+	deleteTodoProcess,
 	toggleAllTodoProcess,
 	clearCompletedProcess,
 	saveTodoProcess,
@@ -21,7 +21,7 @@ function getProperties(store: Store<any>, properties: any) {
 			return { id: uuid(), label, completed: false };
 		}),
 		todoInput: createProcessRunner(todoInputProcess),
-		removeTodo: createProcessRunner(removeTodoProcess),
+		removeTodo: createProcessRunner(deleteTodoProcess),
 		toggleTodo: createProcessRunner(toggleTodoProcess),
 		toggleTodos: createProcessRunner(toggleAllTodoProcess),
 		clearCompleted: createProcessRunner(clearCompletedProcess),
