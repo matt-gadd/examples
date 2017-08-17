@@ -23,7 +23,7 @@ function failOccasionally(callback: RouteCallback) {
 function delayOccasionally(callback: RouteCallback) {
 	return (req: MockerRequest, res: MockerResponse) => {
 		const delay = !!Math.round(Math.random());
-		delay ? setTimeout(() => callback(req, res), 3000) : callback(req, res);
+		delay ? setTimeout(() => callback(req, res), 2000) : callback(req, res);
 	};
 }
 
